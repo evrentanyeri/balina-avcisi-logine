@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Balina Avcısı | Giriş</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Boxicons -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --primary-dark: #1e40af;
+      --text-color: #fff;
+      --text-muted: rgba(255, 255, 255, 0.6);
+      --background-dark: #0f1729;
+      --card-bg: rgba(26, 31, 60, 0.5);
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--background-dark) 0%, #1a1f3c 100%);
+      color: var(--text-color);
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; line-height: 1.5;
+    }
+    .auth-card {
+      display: flex; width: 900px; max-width: 95%;
+      border-radius: 1rem; overflow: hidden;
+      background-color: var(--card-bg); backdrop-filter: blur(15px);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 0 30px rgba(0,0,0,.3);
+    }
+    .auth-form-side { flex: 1; padding: 2.5rem; position: relative; z-index: 1; }
+    @media (max-width: 991.98px) { .auth-form-side { padding: 2rem; } .auth-card { flex-direction: column; } }
+    .text-center { text-align: center; }
+    .auth-logo { width: 120px; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-label { display: block; font-weight: 600; margin-bottom: .5rem; color: var(--text-muted); }
+    .input-group { display: flex; align-items: center; background-color: rgba(255,255,255,.1); border-radius: .5rem; overflow: hidden; }
+    .input-group-text { padding: .75rem; color: var(--text-muted); }
+    .form-control { flex: 1; padding: .75rem; border: none; outline: none; background: transparent; color: var(--text-color); }
+    .form-control::placeholder { color: var(--text-muted); }
+    .btn {
+      background-color: var(--primary-color); color: #fff; border: none; border-radius: .5rem;
+      padding: .75rem 1rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; transition: background .2s;
+    }
+    .btn:hover { background-color: var(--primary-dark); }
+    .w-100 { width: 100%; }
+    .auth-footer { margin-top: 2rem; text-align: center; }
+    .exchange-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(60px,1fr)); gap: 1rem; margin-top: 1rem; }
+    .exchange-item img { width: 60px; height: 60px; border-radius: .5rem; transition: transform .2s; }
+    .exchange-item img:hover { transform: scale(1.1); }
+    .social-media-links a {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; border-radius: 50%; color: white; margin: 0 .25rem; transition: transform .2s;
+    }
+    .btn-telegram { background: #229ED9; }
+    .btn-twitter { background: #1DA1F2; }
+    .btn-instagram { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+    .social-media-links a:hover { transform: scale(1.1); }
+  </style>
+</head>
+<body>
+  <div class="auth-card">
+    <div class="auth-form-side">
+      <div class="text-center mb-4">
+        <img src="https://whalehuntapp.com/app-assets/images/logo/logo-new2.png" alt="Balina Avcısı" class="auth-logo">
+        <h2>Balina Avcısı'na Hoş Geldiniz! 👋</h2>
+        <p class="text-muted">Hesabınıza giriş yapın ve ticaret yolculuğunuza başlayın</p>
+      </div>
+
+      <form id="loginForm" method="post">
+        <div class="form-group">
+          <label class="form-label" for="username">Kullanıcı Adı</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class='bx bx-user'></i></span>
+            <input id="username" class="form-control" type="text" placeholder="Kullanıcı adınızı girin" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Şifre</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class='bx bx-lock-alt'></i></span>
+            <input id="password" class="form-control" type="password" placeholder="••••••••" required>
+          </div>
+        </div>
+
+        <button type="submit" id="btnLogin" class="btn btn-primary w-100">
+          Giriş Yap <i class='bx bx-right-arrow-alt'></i>
+        </button>
+
+        <div class="mt-4 text-center">
+          <span class="text-muted">Hesabınız yok mu?</span>
+          <a href="#" class="auth-link"> Hemen Kaydolun</a>
+        </div>
+      </form>
+
+      <div class="auth-footer">
+        <h4>Borsalarımız</h4>
+        <div class="exchange-grid">
+          <a href="https://www.mexc.com/register?inviteCode=1XEW5" target="_blank" class="exchange-item"><img src="https://whalehuntapp.com/assets/markets/mxc.jpeg" alt="MEXC"></a>
+          <a href="https://www.binance.com/en/futures/ref/130606425" target="_blank" class="exchange-item"><img src="https://whalehuntapp.com/assets/markets/binancelogo-futures.png" alt="Binance Futures"></a>
+          <a href="https://accounts.binance.com/en/register?ref=FF097EWY" target="_blank" class="exchange-item"><img src="https://whalehuntapp.com/assets/markets/binancelogo.png" alt="Binance"></a>
+          <a href="https://www.gate.io/signup/6014121" target="_blank" class="exchange-item"><img src="https://whalehuntapp.com/assets/markets/gatelogo.png" alt="Gate.io"></a>
+          <a href="https://www.kucoin.com/ucenter/signup?rcode=r3LP6YU" target="_blank" class="exchange-item"><img src="https://whalehuntapp.com/assets/markets/kucoin.png" alt="KuCoin"></a>
+          <a href="https://bitfinex.com/?refcode=1-Y9-T4mx" target="_blank" class="exchange-item"><img src="https://whalehuntapp.com/assets/markets/bitfinex.png" alt="Bitfinex"></a>
+        </div>
+
+        <h4 class="mt-4">Bizi Takip Edin</h4>
+        <div class="social-media-links">
+          <a href="https://t.me/WhaleHuntApp" target="_blank" class="btn-telegram"><i class='bx bxl-telegram'></i></a>
+          <a href="https://x.com/WhaleHunterApp/" target="_blank" class="btn-twitter"><i class='bx bxl-twitter'></i></a>
+          <a href="https://www.instagram.com/whalehunterapp/" target="_blank" class="btn-instagram"><i class='bx bxl-instagram'></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

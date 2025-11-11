@@ -1,0 +1,58 @@
+async function getCryptoData() {
+  const urls = {
+    binance: "https://api.binance.com/api/v3/ticker/24hr",
+    mexc: "https://api.mexc.com/api/v3/ticker/24hr",
+    kucoin: "https://api.kucoin.com/api/v1/market/allTickers"
+  };
+
+  const [binance, mexc, kucoin] = await Promise.all([
+    fetch(urls.binance).then(r => r.json()),
+    fetch(urls.mexc).then(r => r.json()),
+    fetch(urls.kucoin).then(r => r.json())
+  ]);
+
+  const table = document.querySelector("#cryptoTable tbody");
+  table.innerHTML = "";
+
+  // Binance verisi
+  binance.slice(0, 7).forEach((c, i) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${c.symbol}</td>
+      <td>${parseFloat(c.lastPrice).toFixed(5)}</td>
+      <td class="${c.priceChangePercent > 0 ? 'green':'red'}">${parseFloat(c.priceChangePercent).toFixed(2)}%</td>
+      <td><span class="market">Binance</span></td>
+    `;
+    table.appendChild(row);
+  });
+
+  // MEXC verisi
+  mexc.slice(0, 7).forEach((c, i) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${i + 8}</td>
+      <td>${c.symbol}</td>
+      <td>${parseFloat(c.lastPrice).toFixed(5)}</td>
+      <td class="${c.priceChangePercent > 0 ? 'green':'red'}">${parseFloat(c.priceChangePercent).toFixed(2)}%</td>
+      <td><span class="market">MEXC</span></td>
+    `;
+    table.appendChild(row);
+  });
+
+  // KuCoin verisi
+  kucoin.data.ticker.slice(0, 6).forEach((c, i) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${i + 15}</td>
+      <td>${c.symbol}</td>
+      <td>${parseFloat(c.last).toFixed(5)}</td>
+      <td class="${c.changeRate > 0 ? 'green':'red'}">${(parseFloat(c.changeRate)*100).toFixed(2)}%</td>
+      <td><span class="market">KuCoin</span></td>
+    `;
+    table.appendChild(row);
+  });
+}
+
+getCryptoData();
+setInterval(getCryptoData, 15000); // her 15 saniyede yenile

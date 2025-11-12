@@ -1,0 +1,59 @@
+const coins = ["BTCUSDT", "ETHUSDT", "KDAUSDT", "BASUSDT", "4USDT"];
+const API = "https://api.mexc.com/api/v3/klines";
+const table = document.getElementById("coinData");
+
+async function fetchData() {
+  table.innerHTML = ""; // tabloyu temizle
+  for (const coin of coins) {
+    try {
+      const url = `${API}?symbol=${coin}&interval=5m&limit=100`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const closes = data.map(c => parseFloat(c[4]));
+      const volumes = data.map(v => parseFloat(v[5]));
+      const rsi = calcRSI(closes);
+      const volChange = ((volumes[99] - volumes[80]) / volumes[80]) * 100;
+      const pump = (rsi > 70 && volChange > 30);
+
+      table.innerHTML += `
+        <tr>
+          <td>${coin}</td>
+          <td>${rsi.toFixed(2)}</td>
+          <td class="${volChange > 0 ? "pump" : "drop"}">${volChange.toFixed(1)}%</td>
+          <td>${pump ? "🚀 PUMP" : "—"}</td>
+        </tr>`;
+    } catch (e) {
+      table.innerHTML += `<tr><td>${coin}</td><td colspan="3">Veri hatası</td></tr>`;
+    }
+  }
+}
+
+// RSI hesaplama
+function calcRSI(closes, period = 14) {
+  let gains = 0, losses = 0;
+  for (let i = 1; i <= period; i++) {
+    const diff = closes[i] - closes[i - 1];
+    if (diff >= 0) gains += diff;
+    else losses -= diff;
+  }
+  let avgGain = gains / period;
+  let avgLoss = losses / period;
+
+  for (let i = period + 1; i < closes.length; i++) {
+    const diff = closes[i] - closes[i - 1];
+    if (diff >= 0) {
+      avgGain = (avgGain * (period - 1) + diff) / period;
+      avgLoss = (avgLoss * (period - 1)) / period;
+    } else {
+      avgGain = (avgGain * (period - 1)) / period;
+      avgLoss = (avgLoss * (period - 1) - diff) / period;
+    }
+  }
+  const rs = avgGain / avgLoss;
+  return 100 - (100 / (1 + rs));
+}
+
+// Her 60 saniyede bir yenile
+fetchData();
+setInterval(fetchData, 60000);

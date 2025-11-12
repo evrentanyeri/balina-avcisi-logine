@@ -1,5 +1,5 @@
 // Balina Avcısı – MEXC Pump Radar (Top 20)
-const CORS = "https://corsproxy.io/";
+const CORS = "https://api.allorigins.win/raw?url=";
 const TICKER_URL = CORS + encodeURIComponent("https://contract.mexc.com/api/v1/contract/ticker");
 const KLINE_BASE = "https://contract.mexc.com/api/v1/contract/kline/";
 

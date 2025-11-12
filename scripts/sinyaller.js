@@ -24,7 +24,13 @@ async function fetchSignals() {
 
     data.forEach((signal, i) => {
       const row = document.createElement("tr");
-      const changeClass = parseFloat(signal.change) >= 0 ? "positive" : "negative";
+      const change = parseFloat(signal.change);
+      const changeClass = change >= 0 ? "positive" : "negative";
+      const bgColor = change >= 0 ? "rgba(0, 128, 0, 0.15)" : "rgba(255, 0, 0, 0.15)";
+
+      row.style.backgroundColor = bgColor;
+      row.style.transition = "background-color 0.8s ease";
+
       row.innerHTML = `
         <td>${i + 1}</td>
         <td>${signal.coin}</td>

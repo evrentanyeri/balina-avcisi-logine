@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📊 Balina Avcısı Dashboard</title>
+  <style>
+    body {
+      background-color: #0d1117;
+      color: #e6edf3;
+      font-family: 'Inter', sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 { color: #58a6ff; }
+    .table {
+      width: 80%;
+      margin: 40px auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #30363d;
+      padding: 12px;
+    }
+    th { background-color: #161b22; }
+    tr:hover { background-color: #21262d; }
+    .pump { color: #00ff88; font-weight: bold; }
+    .drop { color: #ff5555; }
+  </style>
+</head>
+<body>
+  <h1>🐋 Balina Avcısı – RSI / Hacim / Pump Sinyalleri</h1>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Coin</th>
+        <th>RSI</th>
+        <th>Hacim Değişimi</th>
+        <th>Pump Sinyali</th>
+      </tr>
+    </thead>
+    <tbody id="coinData">
+      <tr><td colspan="4">Veriler yükleniyor...</td></tr>
+    </tbody>
+  </table>
+
+  <script src="scripts/sinyaller.js"></script>
+</body>
+</html>

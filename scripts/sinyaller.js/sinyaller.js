@@ -1,0 +1,46 @@
+// Balina Avcısı - Canlı Hacim & Pump sinyalleri
+
+const table = document.getElementById("signalTable");
+
+async function fetchSignals() {
+  try {
+    const url =
+      "https://corsproxy.io/?" +
+      encodeURIComponent(
+        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=20&page=1&sparkline=false"
+      );
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    table.innerHTML = "";
+
+    data.forEach((coin, index) => {
+      const change = coin.price_change_percentage_24h?.toFixed(2) || 0;
+      const volume = (coin.total_volume / 1_000_000).toFixed(1);
+
+      let signal = "";
+      if (change > 5 && volume > 50) signal = "🚀 Pump";
+      else if (change < -5) signal = "🔻 Düşüş";
+      else signal = "⚪ Nötr";
+
+      const row = `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${coin.symbol.toUpperCase()}</td>
+          <td>$${coin.current_price.toFixed(4)}</td>
+          <td style="color:${change > 0 ? "lime" : "red"}">${change}%</td>
+          <td>${volume}M</td>
+          <td>${signal}</td>
+        </tr>
+      `;
+      table.innerHTML += row;
+    });
+  } catch (error) {
+    console.error(error);
+    table.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Veri alınamadı ❌</td></tr>`;
+  }
+}
+
+fetchSignals();
+setInterval(fetchSignals, 20000);

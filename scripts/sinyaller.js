@@ -1,26 +1,48 @@
-document.addEventListener("DOMContentLoaded", () => {
+async function fetchSignals() {
   const tableBody = document.getElementById("signalTable");
+  const lastUpdate = document.getElementById("lastUpdate");
+  tableBody.innerHTML = "<tr><td colspan='6'>Veriler alınıyor...</td></tr>";
 
-  // Örnek veriler (gerçek API bağlanmadı)
-  const fakeSignals = [
-    { coin: "BTC/USDT", price: "67,200", change: "+1.3%", volume: "523M", exchange: "MEXC" },
-    { coin: "ETH/USDT", price: "3,150", change: "+0.8%", volume: "312M", exchange: "Binance" },
-    { coin: "KDA/USDT", price: "0.079", change: "+7.4%", volume: "2.1M", exchange: "MEXC" },
-  ];
+  try {
+    const symbols = ["BTCUSDT", "ETHUSDT", "KDAUSDT"];
+    const data = [];
 
-  setTimeout(() => {
+    for (const symbol of symbols) {
+      const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+      const json = await response.json();
+      data.push({
+        coin: symbol.replace("USDT", "/USDT"),
+        price: parseFloat(json.lastPrice).toFixed(4),
+        change: parseFloat(json.priceChangePercent).toFixed(2),
+        volume: (parseFloat(json.quoteVolume) / 1_000_000).toFixed(1) + "M",
+        exchange: "Binance"
+      });
+    }
+
     tableBody.innerHTML = "";
-    fakeSignals.forEach((signal, i) => {
-      const row = `
-        <tr>
-          <td>${i + 1}</td>
-          <td>${signal.coin}</td>
-          <td>${signal.price}</td>
-          <td>${signal.change}</td>
-          <td>${signal.volume}</td>
-          <td>${signal.exchange}</td>
-        </tr>`;
-      tableBody.innerHTML += row;
+    data.sort((a, b) => parseFloat(b.volume) - parseFloat(a.volume));
+
+    data.forEach((signal, i) => {
+      const row = document.createElement("tr");
+      const changeClass = parseFloat(signal.change) >= 0 ? "positive" : "negative";
+      row.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${signal.coin}</td>
+        <td>${signal.price}</td>
+        <td class="${changeClass}">${signal.change}%</td>
+        <td>${signal.volume}</td>
+        <td>${signal.exchange}</td>
+      `;
+      tableBody.appendChild(row);
     });
-  }, 1000);
-});
+
+    const now = new Date();
+    lastUpdate.textContent = "Son Güncelleme: " + now.toLocaleTimeString("tr-TR");
+  } catch (error) {
+    console.error("Veri alınamadı:", error);
+    tableBody.innerHTML = "<tr><td colspan='6'>Veri alınırken hata oluştu.</td></tr>";
+  }
+}
+
+fetchSignals();
+setInterval(fetchSignals, 30000);

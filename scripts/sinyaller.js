@@ -6,7 +6,9 @@ async function fetchCoinData() {
   table.innerHTML = `<tr><td colspan="7" class="text-center text-info">🔄 Veriler yükleniyor...</td></tr>`;
 
   try {
-    const res = await fetch(`${proxy}/api/v1/contract/ticker`, { cache: "no-store" });
+    - const res = await fetch(`${proxy}/api/v1/contract/ticker`, { cache: "no-store" });
++ const res = await fetch(`${proxy}/ticker`, { cache: "no-store" });
+
     const data = await res.json();
 
     if (!data || !data.data) {

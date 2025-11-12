@@ -1,0 +1,40 @@
+body {
+  background: radial-gradient(circle at top, #0f1729 0%, #000 100%);
+  color: #e5e5e5;
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+.title {
+  font-size: 1.8rem;
+  color: #00FFFF;
+  text-shadow: 0 0 12px rgba(0,255,255,0.6);
+  margin-bottom: 20px;
+}
+table {
+  width: 95%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background-color: rgba(20, 20, 40, 0.6);
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,255,255,0.2);
+}
+th, td {
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+th {
+  background: rgba(0,255,255,0.1);
+  color: #00FFFF;
+  text-transform: uppercase;
+}
+tr:hover {
+  background: rgba(0,255,255,0.05);
+}
+.loading { color: #9CA3AF; }
+footer {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}

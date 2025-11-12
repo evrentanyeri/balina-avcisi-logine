@@ -14,7 +14,8 @@ async function load(){
     for(const [i,sym] of SYMBOLS.entries()){
       const t=await getJSON(`${BASE}/ticker?symbol=${sym}`);
       const kl=await getJSON(`${BASE}/kline?symbol=${sym}&interval=1m&limit=100`);
-      const closes=kl.data.map(k=>Number(k[4]));
+const dataArr = kl.data || kl;  
+const closes = Array.isArray(dataArr) ? dataArr.map(k => Number(k[4])) : [];
       const rsi=rsiCalc(closes);
       const ch24=Number(t.priceChangePercent||0);
       const vol=Number(t.volume||0);

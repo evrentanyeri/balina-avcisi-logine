@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🐋 Balina Avcısı Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <style>
+    :root{
+      --neon-green:#00ff99;
+      --neon-red:#ff0066;
+      --neon-yellow:#ffd166;
+      --panel-bg:#0b1622;
+      --thead-bg:#162331;
+    }
+    body {
+      background-color: var(--panel-bg);
+      color: #e6edf3;
+      font-family: 'Courier New', monospace;
+    }
+    .table { color: #e6edf3; }
+    .table thead { background-color: var(--thead-bg); }
+    #lastUpdate { color:#9fb3c8; font-size:.9rem; text-align:right; margin: -10px 0 10px 0; }
+    .neon-row {
+      border-radius: 8px;
+      background-size: 200% 200%;
+      animation: glowShift 6s ease-in-out infinite;
+    }
+    @keyframes glowShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .score-badge{
+      display:inline-block;
+      min-width:48px;
+      padding:4px 8px;
+      border-radius:12px;
+      font-weight:700;
+      text-shadow:0 0 6px rgba(255,255,255,.2);
+    }
+    .score-low{ background:rgba(255,0,102,.15); color:var(--neon-red); box-shadow:0 0 10px rgba(255,0,102,.4); }
+    .score-mid{ background:rgba(255,209,102,.12); color:var(--neon-yellow); box-shadow:0 0 10px rgba(255,209,102,.35); }
+    .score-high{ background:rgba(0,255,153,.12); color:var(--neon-green); box-shadow:0 0 10px rgba(0,255,153,.4); }
+    .chip-pos{ color:var(--neon-green); font-weight:700; text-shadow:0 0 6px rgba(0,255,153,.7); }
+    .chip-neg{ color:var(--neon-red); font-weight:700; text-shadow:0 0 6px rgba(255,0,102,.7); }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">🐋 Balina Avcısı Dashboard</span>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">Canlı Kripto Sinyalleri</h3>
+      <p id="lastUpdate" class="mb-0">Veriler yükleniyor...</p>
+    </div>
+    <div class="table-responsive mt-3">
+      <table class="table table-dark table-striped text-center align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Coin</th>
+            <th>Fiyat (USDT)</th>
+            <th>Değişim (24h)</th>
+            <th>Hacim (24h)</th>
+            <th>RSI(14)</th>
+            <th>Pump Skoru</th>
+            <th>Borsa</th>
+          </tr>
+        </thead>
+        <tbody id="signalTable">
+          <tr><td colspan="8" class="text-center py-4">Yükleniyor...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="scripts/sinyaller.js"></script>
+</body>
+</html>

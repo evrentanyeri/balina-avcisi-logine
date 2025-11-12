@@ -1,38 +1,89 @@
-const BASE = "https://sweet-glade-63e8.evrentanyeri.workers.dev";
-const TBL = document.getElementById("signalTable");
-const SYMBOLS = ["BTC_USDT","ETH_USDT","SOL_USDT","KDA_USDT","BCH_USDT","DOGE_USDT","XRP_USDT","BNB_USDT"];
+const proxy = "https://sweet-glade-63e8.evrentanyeri.workers.dev";
 
-async function getJSON(url){const r=await fetch(url);if(!r.ok)throw new Error(r.statusText);return await r.json();}
-function fmt(n,d=2){if(!n)return '—';return Number(n).toLocaleString('tr-TR',{maximumFractionDigits:d});}
-function fmtPct(x){if(x==null)return '—';const c=x>=0?'#00FFAA':'#FF4D6D';return `<span style="color:${c};text-shadow:0 0 6px ${c}">${x.toFixed(2)}%</span>`;}
-function show(msg){TBL.innerHTML=`<tr><td colspan='8' class='loading'>${msg}</td></tr>`;}
+const coinList = [
+  "BTC/USDT",
+  "ETH/USDT",
+  "SOL/USDT",
+  "KDA/USDT",
+  "BCH/USDT",
+  "DOGE/USDT",
+  "XRP/USDT",
+  "BNB/USDT"
+];
 
-async function load(){
-  show('Veriler yükleniyor...');
-  try{
-    const rows=[];
-    for(const [i,sym] of SYMBOLS.entries()){
-      const t=await getJSON(`${BASE}/ticker?symbol=${sym}`);
-      const kl=await getJSON(`${BASE}/kline?symbol=${sym}&interval=1m&limit=100`);
-const dataArr = kl.data || kl;  
-const closes = Array.isArray(dataArr) ? dataArr.map(k => Number(k[4])) : [];
-      const rsi=rsiCalc(closes);
-      const ch24=Number(t.priceChangePercent||0);
-      const vol=Number(t.volume||0);
-      const pump=calcPump(ch24,vol,rsi);
-      rows.push({i:i+1,sym,last:t.lastPrice,chg:ch24,vol:vol,rsi:rsi,pump:pump});
+async function fetchCoinData() {
+  const table = document.getElementById("signalTable");
+  table.innerHTML = `<tr><td colspan="7" class="text-center text-info">Veriler yükleniyor...</td></tr>`;
+
+  try {
+    const results = [];
+
+    for (let coin of coinList) {
+      const symbol = coin.replace("/", "").toUpperCase(); // 🔥 Hatalı sembol formatı düzeltildi
+      const res = await fetch(`${proxy}/ticker?symbol=${symbol}`);
+      const data = await res.json();
+
+      if (!data || data.code || !data.lastPrice) {
+        console.warn("Veri alınamadı:", coin);
+        continue;
+      }
+
+      // Değerleri sayıya çevir
+      const price = parseFloat(data.lastPrice);
+      const change = parseFloat(data.priceChangePercent);
+      const volume = parseFloat(data.volume);
+
+      // Basit RSI tahmini (örnek)
+      const rsi = 50 + Math.min(Math.max(change * 2, -50), 50);
+
+      // Pump skoru (örnek hesaplama)
+      const pumpScore = Math.max(0, (rsi - 50) * (volume / 1000000));
+
+      results.push({
+        coin,
+        price,
+        change,
+        volume,
+        rsi: rsi.toFixed(1),
+        pumpScore: pumpScore.toFixed(2)
+      });
     }
-    rows.sort((a,b)=>b.pump-a.pump);
-    TBL.innerHTML=rows.slice(0,20).map(r=>`
+
+    if (results.length === 0) {
+      table.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Veri alınamadı ❌</td></tr>`;
+      return;
+    }
+
+    // Sıralama: pump skoruna göre azalan
+    results.sort((a, b) => b.pumpScore - a.pumpScore);
+
+    // Tabloya yaz
+    table.innerHTML = results
+      .map(
+        (r, i) => `
       <tr>
-        <td>${r.i}</td><td>${r.sym.replace('_','/')}</td><td>${fmt(r.last)}</td>
-        <td>${fmtPct(r.chg)}</td><td>${fmt(r.vol)}</td>
-        <td style="color:${r.rsi>70?'#00FFAA':r.rsi<30?'#FF4D6D':'#E5E5E5'}">${r.rsi.toFixed(1)}</td>
-        <td style="color:#00BFFF;text-shadow:0 0 8px #00BFFF">${r.pump.toFixed(2)}</td>
+        <td>${i + 1}</td>
+        <td>${r.coin}</td>
+        <td>${r.price ? r.price.toFixed(4) : "-"}</td>
+        <td style="color:${r.change >= 0 ? '#00FFAA' : '#FF5555'};">
+          ${r.change.toFixed(2)}%
+        </td>
+        <td>${r.volume.toLocaleString()}</td>
+        <td>${r.rsi}</td>
+        <td style="color:${r.pumpScore > 0 ? '#00FFFF' : '#888'};">${r.pumpScore}</td>
         <td>MEXC</td>
-      </tr>`).join('');
-  }catch(e){show('Hata: '+e.message);}
+      </tr>`
+      )
+      .join("");
+
+  } catch (err) {
+    console.error(err);
+    table.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Hata: ${err.message}</td></tr>`;
+  }
 }
-function rsiCalc(c,p=14){if(c.length<p)return 50;let g=0,l=0;for(let i=1;i<=p;i++){const d=c[i]-c[i-1];if(d>0)g+=d;else l-=d;}g/=p;l/=p;let rs=g/l;let rsi=100-(100/(1+rs));for(let i=p+1;i<c.length;i++){const d=c[i]-c[i-1];const gain=Math.max(d,0),loss=Math.max(-d,0);g=(g*(p-1)+gain)/p;l=(l*(p-1)+loss)/p;rs=g/l;rsi=100-(100/(1+rs));}return rsi;}
-function calcPump(ch,vol,rsi){return (ch*2)+Math.log10(vol+1)*1.2+(rsi-50)*0.15;}
-load();setInterval(load,30000);
+
+// İlk yüklemede çalıştır
+fetchCoinData();
+
+// Her 60 saniyede bir güncelle
+setInterval(fetchCoinData, 60000);

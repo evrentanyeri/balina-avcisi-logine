@@ -1,0 +1,27 @@
+// Basit canlı veri simülasyonu
+const table = document.getElementById('signalTable');
+
+function randomData() {
+  const coins = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'KDA/USDT', 'BAS/USDT'];
+  const markets = ['Binance', 'MEXC', 'KuCoin'];
+  let html = '';
+
+  for (let i = 0; i < 5; i++) {
+    html += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${coins[i]}</td>
+        <td>${(Math.random() * 100).toFixed(2)} $</td>
+        <td>${(Math.random() * 10 - 5).toFixed(2)}%</td>
+        <td>${(Math.random() * 500000).toFixed(0)}</td>
+        <td>${markets[Math.floor(Math.random() * markets.length)]}</td>
+      </tr>
+    `;
+  }
+
+  table.innerHTML = html;
+}
+
+// Her 10 saniyede bir yenile
+randomData();
+setInterval(randomData, 10000);

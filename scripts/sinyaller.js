@@ -3,14 +3,16 @@ const coinList = ["BTC_USDT", "ETH_USDT", "SOL_USDT", "KDA_USDT", "BCH_USDT", "D
 
 async function fetchCoinData() {
   const table = document.getElementById("signalTable");
-  table.innerHTML = `<tr><td colspan="7" class="text-center text-info">🔄 Veriler yükleniyor...</td></tr>`;
+  const lastUpdate = document.getElementById("lastUpdate");
+
+  table.innerHTML = `<tr><td colspan="8" class="text-center text-info">🔄 Veriler yükleniyor...</td></tr>`;
 
   try {
-    const res = await fetch(`${proxy}`, { cache: "no-store" });
+    const res = await fetch(proxy, { cache: "no-store" });
     const data = await res.json();
 
     if (!data || !data.data) {
-      table.innerHTML = `<tr><td colspan="7" class="text-center text-danger">❌ Veri alınamadı</td></tr>`;
+      table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">❌ Veri alınamadı</td></tr>`;
       return;
     }
 
@@ -23,8 +25,8 @@ async function fetchCoinData() {
       const price = parseFloat(info.lastPrice);
       const change = parseFloat(info.riseFallRate) * 100;
       const volume = parseFloat(info.volume24);
-      const rsi = 50 + (change * 100);
-      const pumpScore = Math.max(0, (rsi - 50) * (volume / 100000000));
+      const rsi = 50 + change * 5; // RSI basitleştirilmiş gösterim
+      const pumpScore = Math.max(0, ((rsi - 50) / 50) * (volume / 1_000_000_000));
 
       results.push({
         coin: coin.replace("_", "/"),
@@ -36,25 +38,36 @@ async function fetchCoinData() {
       });
     }
 
+    if (results.length === 0) {
+      table.innerHTML = `<tr><td colspan="8" class="text-center text-warning">⚠️ Coin verisi bulunamadı</td></tr>`;
+      return;
+    }
+
     let html = "";
     results.forEach((r, i) => {
+      const changeClass = r.change >= 0 ? "chip-pos" : "chip-neg";
+      const scoreClass =
+        r.pumpScore > 80 ? "score-high" :
+        r.pumpScore > 40 ? "score-mid" : "score-low";
+
       html += `
-        <tr>
+        <tr class="neon-row">
           <td>${i + 1}</td>
           <td>${r.coin}</td>
           <td>${r.price}</td>
-          <td>${r.change}%</td>
+          <td class="${changeClass}">${r.change}%</td>
           <td>${r.volume}</td>
           <td>${r.rsi}</td>
-          <td>${r.pumpScore}</td>
+          <td><span class="score-badge ${scoreClass}">${r.pumpScore}</span></td>
           <td>MEXC</td>
         </tr>`;
     });
 
     table.innerHTML = html;
+    lastUpdate.textContent = `Son güncelleme: ${new Date().toLocaleTimeString("tr-TR")}`;
   } catch (err) {
     console.error("Veri çekme hatası:", err);
-    table.innerHTML = `<tr><td colspan="7" class="text-center text-danger">⚠️ Veri alınamadı (${err.message})</td></tr>`;
+    table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">⚠️ Hata: ${err.message}</td></tr>`;
   }
 }
 

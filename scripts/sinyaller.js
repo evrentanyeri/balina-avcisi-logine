@@ -1,17 +1,20 @@
+const proxy = "https://sweet-glade-63e8.evrentanyeri.workers.dev";
+const coinList = ["BTC_USDT", "ETH_USDT", "SOL_USDT", "KDA_USDT", "BCH_USDT", "DOGE_USDT", "XRP_USDT", "BNB_USDT"];
+
 async function fetchCoinData() {
   const table = document.getElementById("signalTable");
-  table.innerHTML = `<tr><td colspan="7" class="text-center text-info">🔄 Veriler yükleniyor...</td></tr>`;
+  table.innerHTML = `<tr><td colspan="8" class="text-center text-info">🔄 Veriler yükleniyor...</td></tr>`;
 
   try {
     const res = await fetch(`${proxy}/api/v1/contract/ticker`, { cache: "no-store" });
     const json = await res.json();
 
     if (!json || !json.data || !Array.isArray(json.data.data)) {
-      table.innerHTML = `<tr><td colspan="7" class="text-center text-danger">❌ Veri alınamadı</td></tr>`;
+      table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">❌ Veri alınamadı</td></tr>`;
       return;
     }
 
-    const data = json.data.data; // 🔹 gerçek coin verisi burada
+    const data = json.data.data;
     const results = [];
 
     for (let coin of coinList) {
@@ -35,7 +38,6 @@ async function fetchCoinData() {
       });
     }
 
-    // tabloyu doldur
     table.innerHTML = results
       .map(
         (r, i) => `
@@ -53,6 +55,9 @@ async function fetchCoinData() {
       .join("");
   } catch (err) {
     console.error("Hata:", err);
-    table.innerHTML = `<tr><td colspan="7" class="text-center text-danger">❌ Veri çekme hatası</td></tr>`;
+    table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">❌ Veri çekme hatası</td></tr>`;
   }
 }
+
+// Sayfa açıldığında otomatik çalıştır
+fetchCoinData();

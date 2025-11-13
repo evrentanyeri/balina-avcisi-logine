@@ -1,62 +1,62 @@
-const proxy = "https://sweet-glade-63e8.evrentanyeri.workers.dev/api/v1/contract/ticker";
+const proxy = "https://balina-avcisi.evrentanyeri.workers.dev";
 const coinList = ["BTC_USDT", "ETH_USDT", "SOL_USDT", "KDA_USDT", "BCH_USDT", "DOGE_USDT", "XRP_USDT", "BNB_USDT"];
 
 async function fetchCoinData() {
   const table = document.getElementById("signalTable");
-  table.innerHTML = `<tr><td colspan="8" class="text-center text-info">🔄 Veriler yükleniyor...</td></tr>`;
+  table.innerHTML = `<tr><td colspan="7" class="text-center text-info">🔄 Veriler yükleniyor...</td></tr>`;
 
   try {
-    const res = await fetch(proxy, { cache: "no-store" });
-    const json = await res.json();
+    const res = await fetch(`${proxy}`, { cache: "no-store" });
+    const data = await res.json();
 
-    if (!json || !Array.isArray(json.data)) {
-      table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">❌ Veri alınamadı</td></tr>`;
+    if (!data || !data.data) {
+      table.innerHTML = `<tr><td colspan="7" class="text-center text-danger">❌ Veri alınamadı</td></tr>`;
       return;
     }
 
-    const data = json.data;
     const results = [];
 
     for (let coin of coinList) {
-      const info = data.find((d) => d.symbol === coin);
+      const info = data.data.find((d) => d.symbol === coin);
       if (!info) continue;
 
       const price = parseFloat(info.lastPrice);
       const change = parseFloat(info.riseFallRate) * 100;
       const volume = parseFloat(info.volume24);
-      const rsi = 50 + Math.min(Math.max(change * 2, -50), 50);
-      const pumpScore = Math.max(0, (rsi - 50) * (volume / 1000000));
+      const rsi = 50 + (change * 100);
+      const pumpScore = Math.max(0, (rsi - 50) * (volume / 100000000));
 
       results.push({
         coin: coin.replace("_", "/"),
-        price,
-        change,
-        volume,
-        rsi,
-        pumpScore,
-        source: "MEXC",
+        price: price.toFixed(2),
+        change: change.toFixed(2),
+        volume: volume.toLocaleString(),
+        rsi: rsi.toFixed(1),
+        pumpScore: pumpScore.toFixed(2),
       });
     }
 
-    table.innerHTML = results
-      .map(
-        (r, i) => `
+    let html = "";
+    results.forEach((r, i) => {
+      html += `
         <tr>
           <td>${i + 1}</td>
           <td>${r.coin}</td>
-          <td>${r.price.toFixed(2)}</td>
-          <td style="color:${r.change >= 0 ? "#00ff99" : "#ff3366"};">${r.change.toFixed(2)}%</td>
-          <td>${(r.volume / 1e6).toFixed(1)}M</td>
-          <td>${r.rsi.toFixed(1)}</td>
-          <td style="color:${r.pumpScore > 5 ? "#00ffff" : "#888"};">${r.pumpScore.toFixed(2)}</td>
-          <td>${r.source}</td>
-        </tr>`
-      )
-      .join("");
+          <td>${r.price}</td>
+          <td>${r.change}%</td>
+          <td>${r.volume}</td>
+          <td>${r.rsi}</td>
+          <td>${r.pumpScore}</td>
+          <td>MEXC</td>
+        </tr>`;
+    });
+
+    table.innerHTML = html;
   } catch (err) {
-    console.error("Hata:", err);
-    table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">❌ Veri çekme hatası</td></tr>`;
+    console.error("Veri çekme hatası:", err);
+    table.innerHTML = `<tr><td colspan="7" class="text-center text-danger">⚠️ Veri alınamadı (${err.message})</td></tr>`;
   }
 }
 
 fetchCoinData();
+setInterval(fetchCoinData, 60000); // her 60 saniyede bir yenile

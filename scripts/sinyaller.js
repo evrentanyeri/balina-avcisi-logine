@@ -9,8 +9,8 @@ async function fetchCoinData() {
     const res = await fetch(`${proxy}/api/v1/contract/ticker`, { cache: "no-store" });
     const json = await res.json();
 
-    // ✅ Gerçek veri dizisi burada
-    if (!json || !json.data || !Array.isArray(json.data)) {
+    // ✅ Artık data dizisini doğru okuyoruz
+    if (!json || !Array.isArray(json.data)) {
       table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">❌ Veri alınamadı</td></tr>`;
       return;
     }
@@ -39,7 +39,7 @@ async function fetchCoinData() {
       });
     }
 
-    // ✅ Tabloyu doldur
+    // ✅ Tabloyu güncelle
     table.innerHTML = results
       .map(
         (r, i) => `

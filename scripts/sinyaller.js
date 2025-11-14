@@ -1,7 +1,10 @@
-// === MEXC FUTURES COINLERİ ÇEK ===
+// ======================================================
+// === MEXC FUTURES (USDT Perpetual) VERİLERİNİ ÇEK ===
+// ======================================================
+
 async function fetchCoinData() {
     try {
-        const response = await fetch("/api/mexc-proxy");
+        const response = await fetch("/api/mexc-proxy.js");
         const json = await response.json();
 
         if (!json || !json.data) {
@@ -11,33 +14,33 @@ async function fetchCoinData() {
 
         const rows = [];
 
-        json.data.forEach((item) => {
-            // item burada TANIMLI → hata vermez
+        for (const item of json.data) {
+            if (!item.symbol || !item.symbol.endsWith("_USDT")) continue;
 
-            // Sadece USDT perp coinleri al
-            if (!item.symbol || !item.symbol.endsWith("_USDT")) return;
-
+            const symbol = item.symbol;
             const price = parseFloat(item.lastPrice || 0);
             const change = parseFloat(item.riseFallValue || 0);
-            const volumeUSDT = parseFloat(item.amount || 0);
 
-            // RSI geçici (sonradan gerçek ekleyeceğiz)
-            const rsi = 80 - Math.random() * 40;
+            // === Gerçek hacmi USD olarak hesapla ===
+            const volumeCoin = parseFloat(item.amount || 0);
+            const volumeUSDT = volumeCoin * price;
+
+            // === Gerçek RSI hesapla ===
+            const rsi = await fetchRSI(symbol);
 
             rows.push({
-                symbol: item.symbol.replace("_USDT", ""),
+                symbol: symbol.replace("_USDT", ""),
                 price,
                 change,
                 volumeUSDT,
                 rsi,
                 pumpScore: calcPumpScore(volumeUSDT, Math.abs(change), rsi),
             });
-        });
+        }
 
-        // Pump skoruna göre sırala
+        // === Pump skoruna göre sırala ===
         rows.sort((a, b) => b.pumpScore - a.pumpScore);
 
-        // Tabloya bas
         updateTable(rows);
 
     } catch (err) {
@@ -45,17 +48,79 @@ async function fetchCoinData() {
     }
 }
 
+// ======================================================
+// === RSI için MEXC 1 Dakikalık Mumları ÇEK ===
+// ======================================================
 
-// === Pump Skoru Hesaplama ===
-function calcPumpScore(volume, change, rsi) {
-    const v = Math.min(volume / 100000, 1);
-    const c = Math.min(change / 5, 1);
-    const r = rsi / 100;
-    return ((v * 0.4 + c * 0.3 + r * 0.3) * 100).toFixed(2);
+async function fetchRSI(symbol) {
+    try {
+        const url =
+            `https://contract.mexc.com/api/v1/contract/kline/${symbol}?interval=Min1&limit=90`;
+
+        const r = await fetch(url);
+        const data = await r.json();
+
+        if (!Array.isArray(data) || data.length < 20) return 50;
+
+        const closes = data.map(c => parseFloat(c[4]));
+        return calculateRSI(closes);
+
+    } catch (err) {
+        console.error(`RSI hesaplanamadı (${symbol})`, err);
+        return 50;
+    }
 }
 
+// ======================================================
+// === RSI Hesaplama (TradingView seviyesinde) ===
+// ======================================================
 
-// === TABLOYA BAS ===
+function calculateRSI(closes, period = 14) {
+    let gains = 0, losses = 0;
+
+    for (let i = 1; i <= period; i++) {
+        const diff = closes[i] - closes[i - 1];
+        if (diff >= 0) gains += diff;
+        else losses -= diff;
+    }
+
+    let avgGain = gains / period;
+    let avgLoss = losses / period;
+
+    for (let i = period + 1; i < closes.length; i++) {
+        const diff = closes[i] - closes[i - 1];
+
+        if (diff >= 0) {
+            avgGain = (avgGain * (period - 1) + diff) / period;
+            avgLoss = (avgLoss * (period - 1)) / period;
+        } else {
+            avgGain = (avgGain * (period - 1)) / period;
+            avgLoss = (avgLoss * (period - 1) - diff) / period;
+        }
+    }
+
+    if (avgLoss === 0) return 100;
+    const rs = avgGain / avgLoss;
+
+    return Math.max(1, Math.min(100, 100 - 100 / (1 + rs)));
+}
+
+// ======================================================
+// === Pump Skoru Hesaplama ===
+// ======================================================
+
+function calcPumpScore(volume, change, rsi) {
+    const v = Math.min(volume / 3000000, 1); // 3M USD hacim = max
+    const c = Math.min(change / 5, 1);       // +5% yükseliş = max
+    const r = rsi / 100;                     // RSI 100 ölçekleme
+
+    return ((v * 0.5 + c * 0.3 + r * 0.2) * 100).toFixed(2);
+}
+
+// ======================================================
+// === TABLOYA BASTIR ===
+// ======================================================
+
 function updateTable(rows) {
     const tbody = document.querySelector("#coin-table-body");
     tbody.innerHTML = "";
@@ -81,7 +146,9 @@ function updateTable(rows) {
         new Date().toLocaleTimeString("tr-TR");
 }
 
+// ======================================================
+// === OTOMATİK YENİLEME ===
+// ======================================================
 
-// Başlat
 fetchCoinData();
 setInterval(fetchCoinData, 30000);

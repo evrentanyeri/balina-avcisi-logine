@@ -4,7 +4,7 @@
 
 async function fetchCoinData() {
     try {
-        const response = await fetch("/api/mexc-proxy.js");
+        const response = await fetch("/api/mexc-proxy");
         const json = await response.json();
 
         if (!json || !json.data) {
@@ -25,7 +25,7 @@ async function fetchCoinData() {
             const volumeCoin = parseFloat(item.amount || 0);
             const volumeUSDT = volumeCoin * price;
 
-            // === Gerçek RSI hesapla ===
+            // === RSI Proxy üzerinden hesaplanıyor ===
             const rsi = await fetchRSI(symbol);
 
             rows.push({
@@ -49,13 +49,12 @@ async function fetchCoinData() {
 }
 
 // ======================================================
-// === RSI için MEXC 1 Dakikalık Mumları ÇEK ===
+// === RSI için MEXC 1 Dakikalık Mumları (PROXY ÜZERİNDEN) ===
 // ======================================================
 
 async function fetchRSI(symbol) {
     try {
-        const url =
-            `https://contract.mexc.com/api/v1/contract/kline/${symbol}?interval=Min1&limit=90`;
+        const url = `/api/kline?symbol=${symbol}&interval=Min1&limit=90`;
 
         const r = await fetch(url);
         const data = await r.json();
@@ -72,7 +71,7 @@ async function fetchRSI(symbol) {
 }
 
 // ======================================================
-// === RSI Hesaplama (TradingView seviyesinde) ===
+// === RSI Hesaplama (TradingView Seviyesi) ===
 // ======================================================
 
 function calculateRSI(closes, period = 14) {
@@ -110,9 +109,9 @@ function calculateRSI(closes, period = 14) {
 // ======================================================
 
 function calcPumpScore(volume, change, rsi) {
-    const v = Math.min(volume / 3000000, 1); // 3M USD hacim = max
-    const c = Math.min(change / 5, 1);       // +5% yükseliş = max
-    const r = rsi / 100;                     // RSI 100 ölçekleme
+    const v = Math.min(volume / 3000000, 1);
+    const c = Math.min(change / 5, 1);
+    const r = rsi / 100;
 
     return ((v * 0.5 + c * 0.3 + r * 0.2) * 100).toFixed(2);
 }

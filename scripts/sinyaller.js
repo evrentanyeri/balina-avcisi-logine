@@ -1,5 +1,5 @@
 // -------------------- AYARLAR --------------------
-const API_URL = "https://mexc-proxy.evren.workers.dev";
+const API_URL = "https://balina-avcisi-logine.vercel.app/api/mexc-proxy";
 const MAX_ROWS = 20;
 const REFRESH_MS = 30000; // 30 saniyede bir yenile
 

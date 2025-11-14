@@ -1,234 +1,132 @@
-/* ===========================
-🐋 BALİNA AVCISI - STİL DOSYASI
-=========================== */
-
-/* 🎯 GENEL AYARLAR */
-:root {
-  --bg-dark: #0b1622;
-  --bg-panel: #101a2b;
-  --bg-header: #162331;
-  --text-main: #e6edf3;
-  --text-muted: #9fb3c8;
-  --neon-green: #00ff99;
-  --neon-red: #ff0066;
-  --neon-yellow: #ffd166;
-  --glow-green: 0 0 20px rgba(0, 255, 153, 0.6);
-  --glow-red: 0 0 20px rgba(255, 0, 102, 0.5);
-  --glow-yellow: 0 0 20px rgba(255, 209, 102, 0.5);
-  --transition-speed: 0.3s;
-}
+/* -------------------------
+   GENEL AYARLAR & TEMA
+-------------------------- */
 
 body {
-  background: var(--bg-dark);
-  color: var(--text-main);
-  font-family: 'Courier New', monospace;
-  margin: 0;
-  padding: 0;
-  line-height: 1.6;
+    background: radial-gradient(circle at 30% 10%, #0a1a2f, #010409);
+    color: #e6edf3;
+    font-family: "Courier New", monospace;
+    margin: 0;
 }
 
-h3, h4, h5, p {
-  margin: 0;
+/* -------------------------
+   TABLO TASARIMI
+-------------------------- */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    color: #e6edf3;
+    font-size: 18px;
 }
 
-.navbar {
-  background: var(--bg-header);
-  box-shadow: 0 0 12px rgba(0, 255, 153, 0.2);
+th {
+    padding: 12px;
+    text-align: center;
+    background-color: #0f1b2d;
+    color: #c8ffea;
+    font-size: 20px;
+    border-bottom: 2px solid #1e2a3d;
 }
 
-/* ===========================
-📊 TABLO STİLİ
-=========================== */
-
-.table {
-  color: var(--text-main);
-  border-collapse: separate;
-  border-spacing: 0 8px;
+td {
+    padding: 14px;
+    text-align: center;
+    border-bottom: 1px solid #1b2a41;
+    background-color: rgba(255, 255, 255, 0.04);
 }
 
-.table thead {
-  background: var(--bg-header);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  font-size: 0.9rem;
-  color: var(--text-muted);
+/* Sıra numarası sütunu */
+td:first-child, th:first-child {
+    width: 40px;
 }
 
-.table td, .table th {
-  vertical-align: middle;
-  border: none !important;
-  padding: 12px;
+/* Hover efekti */
+tr:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    transition: 0.2s;
 }
 
-.table tbody tr {
-  background: var(--bg-panel);
-  border-radius: 10px;
-  transition: transform 0.25s ease, box-shadow 0.3s ease;
-}
-
-.table tbody tr:hover {
-  transform: scale(1.015);
-  box-shadow: 0 0 15px rgba(0, 255, 153, 0.15);
-}
-
-/* ===========================
-📈 PUMP SKORU BADGELERİ
-=========================== */
+/* -------------------------
+   PUMP SKOR ROZETLERİ
+-------------------------- */
 
 .score-badge {
-  padding: 5px 10px;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 0.95rem;
-  display: inline-block;
-  text-align: center;
-  min-width: 60px;
-  transition: 0.3s ease;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
-}
-
-.score-high {
-  background: rgba(0, 255, 153, 0.15);
-  color: var(--neon-green);
-  box-shadow: var(--glow-green);
-  animation: pulseGreen 2s infinite ease-in-out;
-}
-
-.score-mid {
-  background: rgba(255, 209, 102, 0.15);
-  color: var(--neon-yellow);
-  box-shadow: var(--glow-yellow);
-  animation: pulseYellow 3s infinite ease-in-out;
-}
-
-.score-low {
-  background: rgba(255, 0, 102, 0.12);
-  color: var(--neon-red);
-  box-shadow: var(--glow-red);
-  animation: pulseRed 3s infinite ease-in-out;
-}
-
-/* 🔁 Animasyonlar */
-@keyframes pulseGreen {
-  0%, 100% { box-shadow: 0 0 10px #00ff99; opacity: 1; }
-  50% { box-shadow: 0 0 25px #00ff99; opacity: 0.8; }
-}
-
-@keyframes pulseYellow {
-  0%, 100% { box-shadow: 0 0 10px #ffd166; opacity: 1; }
-  50% { box-shadow: 0 0 25px #ffd166; opacity: 0.7; }
-}
-
-@keyframes pulseRed {
-  0%, 100% { box-shadow: 0 0 10px #ff0066; opacity: 1; }
-  50% { box-shadow: 0 0 25px #ff0066; opacity: 0.8; }
-}
-
-/* ===========================
-🕒 SON GÜNCELLEME BİLGİSİ
-=========================== */
-#lastUpdate {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  text-align: right;
-  margin-top: 5px;
-  font-style: italic;
-}
-
-/* ===========================
-📱 MOBİL UYUMLULUK
-=========================== */
-@media (max-width: 768px) {
-  .table thead {
-    display: none;
-  }
-  .table, .table tbody, .table tr, .table td {
-    display: block;
-    width: 100%;
-  }
-  .table tr {
-    margin-bottom: 1rem;
-    box-shadow: 0 0 10px rgba(0,255,153,0.1);
-  }
-  .table td {
-    text-align: right;
-    padding-left: 50%;
-    position: relative;
-  }
-  .table td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 15px;
-    width: 45%;
-    padding-left: 10px;
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 14px;
     font-weight: bold;
-    color: var(--text-muted);
-    text-align: left;
-  }
+    font-size: 18px;
+    text-shadow: 0 0 4px rgba(0,0,0,0.3);
 }
 
-/* ===========================
-🌈 GEÇİŞLER VE PARLAMA
-=========================== */
-.neon-row {
-  border-radius: 8px;
-  transition: box-shadow 0.4s ease;
+/* HIGH (80–100) */
+.score-high {
+    background: rgba(0, 255, 0, 0.18);
+    color: #ccffcc;
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.22);
 }
 
-.neon-row:hover {
-  box-shadow: 0 0 25px rgba(0,255,153,0.3);
+/* MID (60–80) */
+.score-mid {
+    background: rgba(255, 215, 0, 0.2);
+    color: #fff3b0;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.22);
 }
+
+/* LOW (0–60) */
+.score-low {
+    background: rgba(255, 0, 90, 0.22);
+    color: #ffb3c7;
+    box-shadow: 0 0 12px rgba(255, 0, 90, 0.25);
+}
+
+/* -------------------------
+   DEĞİŞİM RENKLERİ
+-------------------------- */
 
 .text-success {
-  color: var(--neon-green) !important;
+    color: #3cff7d !important;
 }
 
 .text-danger {
-  color: var(--neon-red) !important;
+    color: #ff6f91 !important;
 }
+
+/* -------------------------
+   EN YÜKSEK SKOR (PARLAMA)
+-------------------------- */
+
 .highlight-row {
-  border: 2px solid #00ff99;
-  box-shadow: 0 0 25px rgba(0, 255, 153, 0.4);
-  animation: shine 3s infinite ease-in-out;
+    animation: glow 1.5s ease-in-out infinite alternate;
 }
 
-@keyframes shine {
-  0%, 100% { background-color: rgba(0,255,153,0.05); }
-  50% { background-color: rgba(0,255,153,0.15); }
-}
-.highlight-row {
-  border: 2px solid #00ff99;
-  box-shadow: 0 0 25px rgba(0, 255, 153, 0.4);
-  animation: glowPulse 2.5s infinite ease-in-out;
+@keyframes glow {
+    from { background-color: rgba(0,255,0,0.05); }
+    to   { background-color: rgba(0,255,0,0.15); }
 }
 
-@keyframes glowPulse {
-  0%, 100% {
-    background-color: rgba(0,255,153,0.05);
-    box-shadow: 0 0 15px rgba(0,255,153,0.3);
-  }
-  50% {
-    background-color: rgba(0,255,153,0.15);
-    box-shadow: 0 0 30px rgba(0,255,153,0.6);
-  }
-}
-tbody tr.highlight-row {
-  outline: 2px solid #00ff99;
-  box-shadow: 0 0 18px rgba(0,255,153,.35) inset;
-  animation: glowPulse 2.5s ease-in-out infinite;
-}
-@keyframes glowPulse {
-  0%,100% { background: rgba(0,255,153,.06); }
-  50%     { background: rgba(0,255,153,.14); }
-}
-.highlight-row {
-  outline: 2px solid #00ff99;
-  box-shadow: 0 0 15px rgba(0,255,153,.4);
-  animation: glowPulse 2.2s infinite ease-in-out;
+/* -------------------------
+   BAŞLIK
+-------------------------- */
+
+h1, h2 {
+    text-align: center;
+    margin-top: 20px;
+    color: #d0f7ff;
+    text-shadow: 0 0 12px rgba(0, 255, 200, 0.4);
 }
 
-@keyframes glowPulse {
-  0%, 100% { background-color: rgba(0,255,153,.06); }
-  50%      { background-color: rgba(0,255,153,.15); }
-}
+/* -------------------------
+   ALT BİLGİ (FOOTER)
+-------------------------- */
 
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    color: #88a9c6;
+    font-size: 14px;
+    opacity: 0.7;
+}

@@ -1,147 +1,151 @@
-// ------------ AYARLAR -------------
-// MEXC doğrudan:
-const API_URL = "https://api.mexc.com/api/v3/ticker/24hr";
-
-// Eğer Cloudflare Worker üzerinden gidiyorsan, yukarıyı yorum satırı yap,
-// aşağıdakini aktif et:
-// const API_URL = "https://sweet-glade-63e8.evrentanyeri.workers.dev/api/v3/ticker/24hr";
-
-const MAX_ROWS = 20;     // tabloda gösterilecek coin sayısı
-const REFRESH_MS = 30000; // 30 sn'de bir güncelle
-
-// ------------ YARDIMCI FONKSİYONLAR -------------
-
-// Hacmi K / M / B kısaltması ile göster
-function formatKMB(value) {
-  const n = Number(value);
-  if (!n || n === 0) return "$0";
-
-  if (n >= 1e9) return "$" + (n / 1e9).toFixed(2) + " B";
-  if (n >= 1e6) return "$" + (n / 1e6).toFixed(2) + " M";
-  if (n >= 1e3) return "$" + (n / 1e3).toFixed(2) + " K";
-
-  return "$" + n.toFixed(2);
-}
-
-// Pump skoru (hacim + değişim + RSI)
-function calcPumpScore(volumeUSDT, changeAbs, rsi) {
-  const volumeScore = Math.log10(volumeUSDT + 1) * 10; // 0–50+
-  const rsiScore     = 100 - rsi;                      // 0–80
-  const changeScore  = changeAbs;                     // 0–∞
-
-  const raw =
-    volumeScore * 0.45 +
-    rsiScore     * 0.25 +
-    changeScore  * 0.20;
-
-  return Math.min(raw, 100); // 0–100 arası
-}
-
-// ------------ ANA FONKSİYON -------------
-
-async function fetchCoinData() {
-  const table      = document.getElementById("signalTable");
-  const lastUpdate = document.getElementById("lastUpdate");
-
-  if (!table) {
-    console.error("signalTable bulunamadı. HTML'de tbody id='signalTable' olmalı.");
-    return;
-  }
-
-  // Yükleniyor mesajı
-  table.innerHTML = `
-    <tr>
-      <td colspan="8" class="text-center text-info">
-        Veriler yükleniyor...
-      </td>
-    </tr>
-  `;
-
-  try {
-    const res  = await fetch(API_URL);
-    const data = await res.json();
-
-    // MEXC 24hr ticker verisini kullan
-    let rows = data
-      .filter(x => x.symbol.endsWith("USDT"))         // USDT pariteleri
-      .map(item => {
-        const price       = parseFloat(item.lastPrice);
-        const change      = parseFloat(item.priceChange);   // $ değişim
-        const changeAbs   = Math.abs(change);
-        const volumeQuote = parseFloat(item.quoteVolume);   // USDT hacmi
-        const rsi         = 20 + Math.random() * 60;        // şimdilik pseudo RSI
-
-        const pumpScore   = calcPumpScore(volumeQuote, changeAbs, rsi);
-
-        return {
-          symbol:    item.symbol,
-          price,
-          change,
-          volumeUSDT: volumeQuote,
-          rsi,
-          pumpScore
-        };
-      });
-
-    // Pump skoruna göre sırala (en yüksek yukarı)
-    rows.sort((a, b) => b.pumpScore - a.pumpScore);
-
-    // İlk MAX_ROWS adetini al (ör: 20)
-    rows = rows.slice(0, MAX_ROWS);
-
-    let html = "";
-
-    rows.forEach((r, i) => {
-      const changeClass =
-        r.change >= 0 ? "text-success" : "text-danger";
-
-      const scoreClass =
-        r.pumpScore >= 80 ? "score-high" :
-        r.pumpScore >= 60 ? "score-mid"  :
-                            "score-low";
-
-      html += `
-        <tr class="neon-row ${i === 0 ? "highlight-row" : ""}">
-          <td>${i + 1}</td>
-          <td>${r.symbol.replace("_", "/")}</td>
-          <td>$${r.price.toFixed(2)}</td>
-          <td class="${changeClass}">
-            ${r.change.toFixed(2)} $
-          </td>
-          <td>${formatKMB(r.volumeUSDT)}</td>
-          <td>${r.rsi.toFixed(1)}</td>
-          <td>
-            <span class="score-badge ${scoreClass}">
-              ${r.pumpScore.toFixed(2)}
-            </span>
-          </td>
-          <td>MEXC</td>
-        </tr>
-      `;
-    });
-
-    table.innerHTML = html;
-
-    if (lastUpdate) {
-      lastUpdate.textContent =
-        "Son güncelleme: " +
-        new Date().toLocaleTimeString("tr-TR");
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐋 Balina Avcısı - MEXC Pump Radar</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <style>
+    :root {
+      --neon-green: #00ff99;
+      --neon-red: #ff0066;
+      --neon-yellow: #ffd166;
+      --panel-bg: #050b14;
+      --thead-bg: #0e1a27;
     }
 
-  } catch (err) {
-    console.error("Veri çekme hatası:", err);
-    table.innerHTML = `
-      <tr>
-        <td colspan="8" class="text-center text-danger">
-          ⚠️ Veri alınamadı: ${err.message}
-        </td>
-      </tr>
-    `;
-  }
-}
+    body {
+      background: radial-gradient(circle at 30% 10%, #0a1a2f, #010409);
+      color: #e6edf3;
+      font-family: 'Courier New', monospace;
+    }
 
-// İlk yükle
-fetchCoinData();
+    .navbar {
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 12px rgba(0, 255, 153, 0.5);
+    }
 
-// 30 saniyede bir yenile
-setInterval(fetchCoinData, REFRESH_MS);
+    .table {
+      color: #e6edf3;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .table thead {
+      background: var(--thead-bg);
+      color: var(--neon-green);
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(0,255,153,0.6);
+    }
+
+    .score-badge {
+      display: inline-block;
+      min-width: 52px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-shadow: 0 0 6px rgba(255,255,255,.2);
+    }
+
+    .score-low { background: rgba(255,0,102,.15); color: var(--neon-red); box-shadow: 0 0 10px rgba(255,0,102,.3);}
+    .score-mid { background: rgba(255,209,102,.15); color: var(--neon-yellow); box-shadow: 0 0 10px rgba(255,209,102,.3);}
+    .score-high { background: rgba(0,255,153,.15); color: var(--neon-green); box-shadow: 0 0 10px rgba(0,255,153,.3);}
+
+    .chip-pos { color: var(--neon-green); font-weight: 700; text-shadow: 0 0 5px rgba(0,255,153,0.7);}
+    .chip-neg { color: var(--neon-red); font-weight: 700; text-shadow: 0 0 5px rgba(255,0,102,0.7);}
+    #lastUpdate { color: #9fb3c8; font-size: .9rem; text-align: right; margin-top: 10px; }
+    footer { text-align: center; margin-top: 20px; color: #6c757d; font-size: 0.9rem; }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-dark mb-4">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">🐋 Balina Avcısı - MEXC Pump Radar</span>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Pump Adayları</h4>
+      <p id="lastUpdate">Veriler yükleniyor...</p>
+    </div>
+
+    <div class="table-responsive mt-3">
+      <table class="table table-dark table-striped text-center align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>COİN</th>
+            <th>FİYAT</th>
+            <th>24S DEĞİŞİM</th>
+            <th>HACİM</th>
+            <th>RSI</th>
+            <th>PUMP SKORU</th>
+            <th>BORSA</th>
+          </tr>
+        </thead>
+        <tbody id="signalTable">
+          <tr><td colspan="8">Veriler yükleniyor...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>© 2025 Balina Avcısı Dashboard | by Evren</footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const table = document.getElementById("signalTable");
+      const lastUpdate = document.getElementById("lastUpdate");
+
+      async function fetchCoinData() {
+        try {
+          const apiUrl = "https://balina-avcisi.evrentanyeri.workers.dev/";
+          const response = await fetch(apiUrl);
+          if (!response.ok) throw new Error("Veri alınamadı!");
+
+          const data = await response.json();
+          if (!data || !data.data) throw new Error("Geçersiz veri yapısı!");
+
+          const coins = data.data.slice(0, 20);
+          let html = "";
+
+          coins.forEach((r, i) => {
+            const price = parseFloat(r.lastPrice).toFixed(2);
+            const change = parseFloat(r.riseFallValue).toFixed(2);
+            const volume = parseFloat(r.amount24).toLocaleString("tr-TR");
+            const rsi = (30 + Math.random() * 40).toFixed(1);
+            const pumpScore = ((rsi / 100) * 50 + (Math.random() * 50)).toFixed(2);
+
+            const changeClass = change >= 0 ? "chip-pos" : "chip-neg";
+            const scoreClass =
+              pumpScore > 80 ? "score-high" : pumpScore > 40 ? "score-mid" : "score-low";
+
+            html += `
+              <tr>
+                <td>${i + 1}</td>
+                <td>${r.symbol}</td>
+                <td>${price}</td>
+                <td class="${changeClass}">${change}%</td>
+                <td>${volume}</td>
+                <td>${rsi}</td>
+                <td><span class="score-badge ${scoreClass}">${pumpScore}</span></td>
+                <td>MEXC</td>
+              </tr>`;
+          });
+
+          table.innerHTML = html;
+          lastUpdate.textContent = `Son güncelleme: ${new Date().toLocaleTimeString("tr-TR")}`;
+        } catch (err) {
+          console.error("Veri çekme hatası:", err);
+          table.innerHTML = `<tr><td colspan="8" class="text-danger text-center">⚠️ Hata: ${err.message}</td></tr>`;
+        }
+      }
+
+      fetchCoinData();
+      setInterval(fetchCoinData, 60000);
+    });
+  </script>
+</body>
+</html>

@@ -1,82 +1,61 @@
-const proxy = "https://balina-avcisi.evrentanyeri.workers.dev";
-const coinList = ["BTC_USDT", "ETH_USDT", "SOL_USDT", "KDA_USDT", "BCH_USDT", "DOGE_USDT", "XRP_USDT", "BNB_USDT"];
-
-async function fetchCoinData() {
+document.addEventListener("DOMContentLoaded", () => {
   const table = document.getElementById("signalTable");
-const lastUpdate = document.getElementById("lastUpdate");
-if (lastUpdate) {
-    lastUpdate.textContent = "Son güncelleme: " + new Date().toLocaleTimeString();
-}
+  const lastUpdate = document.getElementById("lastUpdate");
 
-  table.innerHTML = `<tr><td colspan="8" class="text-center text-info">🔄 Veriler yükleniyor...</td></tr>`;
+  async function fetchCoinData() {
+    try {
+      // 🔹 Worker adresin:
+      const apiUrl = "https://balina-avcisi.evrentanyeri.workers.dev/";
 
-  try {
-    const res = await fetch(proxy, { cache: "no-store" });
-    const data = await res.json();
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error("Veri alınamadı!");
 
-    if (!data || !data.data) {
-      table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">❌ Veri alınamadı</td></tr>`;
-      return;
-    }
+      const data = await response.json();
+      if (!data || !data.data) throw new Error("Geçersiz veri yapısı!");
 
-    const results = [];
+      const coins = data.data.slice(0, 20); // İlk 20 coini gösterelim
+      let html = "";
 
-    for (let coin of coinList) {
-      const info = data.data.find((d) => d.symbol === coin);
-      if (!info) continue;
+      coins.forEach((r, i) => {
+        const price = parseFloat(r.lastPrice).toFixed(2);
+        const change = parseFloat(r.riseFallValue).toFixed(2);
+        const volume = parseFloat(r.amount24).toLocaleString("tr-TR");
+        const rsi = (30 + Math.random() * 40).toFixed(1); // test amaçlı
+        const pumpScore = ((Math.random() * 100)).toFixed(2); // test amaçlı
 
-      const price = parseFloat(info.lastPrice);
-      const change = parseFloat(info.riseFallRate) * 100;
-      const volume = parseFloat(info.volume24);
-      const rsi = 50 + change * 5; // RSI basitleştirilmiş gösterim
-      const pumpScore = Math.max(0, ((rsi - 50) / 50) * (volume / 1_000_000_000));
+        const changeClass = change >= 0 ? "chip-pos" : "chip-neg";
+        const scoreClass =
+          pumpScore > 80 ? "score-high" : pumpScore > 40 ? "score-mid" : "score-low";
 
-      results.push({
-        coin: coin.replace("_", "/"),
-        price: price.toFixed(2),
-        change: change.toFixed(2),
-        volume: volume.toLocaleString(),
-        rsi: rsi.toFixed(1),
-        pumpScore: pumpScore.toFixed(2),
+        html += `
+          <tr class="neon-row">
+            <td>${i + 1}</td>
+            <td>${r.symbol}</td>
+            <td>${price}</td>
+            <td class="${changeClass}">${change}%</td>
+            <td>${volume}</td>
+            <td>${rsi}</td>
+            <td><span class="score-badge ${scoreClass}">${pumpScore}</span></td>
+            <td>MEXC</td>
+          </tr>`;
       });
+
+      if (table) {
+        table.innerHTML = html;
+      }
+
+      if (lastUpdate) {
+        lastUpdate.textContent = `Son güncelleme: ${new Date().toLocaleTimeString("tr-TR")}`;
+      }
+    } catch (err) {
+      console.error("Veri çekme hatası:", err);
+      if (table) {
+        table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">⚠️ Hata: ${err.message}</td></tr>`;
+      }
     }
-
-    if (results.length === 0) {
-      table.innerHTML = `<tr><td colspan="8" class="text-center text-warning">⚠️ Coin verisi bulunamadı</td></tr>`;
-      return;
-    }
-
-    let html = "";
-    results.forEach((r, i) => {
-      const changeClass = r.change >= 0 ? "chip-pos" : "chip-neg";
-      const scoreClass =
-        r.pumpScore > 80 ? "score-high" :
-        r.pumpScore > 40 ? "score-mid" : "score-low";
-
-      html += `
-        <tr class="neon-row">
-          <td>${i + 1}</td>
-          <td>${r.coin}</td>
-          <td>${r.price}</td>
-          <td class="${changeClass}">${r.change}%</td>
-          <td>${r.volume}</td>
-          <td>${r.rsi}</td>
-          <td><span class="score-badge ${scoreClass}">${r.pumpScore}</span></td>
-          <td>MEXC</td>
-        </tr>`;
-    });
-const lastUpdate = document.getElementById("lastUpdate");
-if (lastUpdate) {
-  lastUpdate.textContent = `Son güncelleme: ${new Date().toLocaleTimeString()}`;
-}
-
-    table.innerHTML = html;
-    lastUpdate.textContent = `Son güncelleme: ${new Date().toLocaleTimeString("tr-TR")}`;
-  } catch (err) {
-    console.error("Veri çekme hatası:", err);
-    table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">⚠️ Hata: ${err.message}</td></tr>`;
   }
-}
 
-fetchCoinData();
-setInterval(fetchCoinData, 60000); // her 60 saniyede bir yenile
+  // 🔄 İlk yükleme + otomatik yenileme
+  fetchCoinData();
+  setInterval(fetchCoinData, 60000); // her 60 saniyede yenile
+});

@@ -1,5 +1,5 @@
 // ===========================
-// 🐋 BALİNA AVCISI – PUMP RADAR v2
+// 🐋 BALİNA AVCISI – PUMP RADAR v3
 // ===========================
 
 async function fetchCoinData() {
@@ -10,15 +10,15 @@ async function fetchCoinData() {
     const response = await fetch("https://api.mexc.com/api/v3/ticker/24hr");
     const data = await response.json();
 
-    // 🔹 Sadece USDT paritelerini al, ilk 20 tanesini filtrele
+    // 🔹 Sadece USDT çiftlerini al, ilk 30 tanesini seç
     const filtered = data
       .filter(r => r.symbol.endsWith("USDT"))
       .slice(0, 30)
       .map(r => {
         const price = parseFloat(r.lastPrice);
-        const change = parseFloat(r.priceChangePercent);
-        const volume = parseFloat(r.quoteVolume);
-        const rsi = 20 + Math.random() * 60; // test amaçlı, API’den alınabilir
+        const change = parseFloat(r.priceChange);
+        const volume = parseFloat(r.quoteVolume); // hacim USDT bazında
+        const rsi = 20 + Math.random() * 60; // test amaçlı RSI
         const fundingRate = (Math.random() * 0.04 - 0.02).toFixed(4);
         const socialBoost = Math.floor(Math.random() * 10);
 
@@ -47,7 +47,7 @@ async function fetchCoinData() {
         };
       });
 
-    // 🔹 En yüksek pumpScore'a göre sırala (azalan)
+    // 🔹 En yüksek pumpScore'a göre sırala
     const sorted = filtered.sort((a, b) => b.pumpScore - a.pumpScore);
 
     let html = "";
@@ -60,13 +60,18 @@ async function fetchCoinData() {
           ? "score-mid"
           : "score-low";
 
+      // 🔹 Hacim formatı: $12,345,678 şeklinde
+      const formattedVolume = `$${r.volume.toLocaleString("en-US", {
+        maximumFractionDigits: 0,
+      })}`;
+
       html += `
         <tr class="neon-row ${i === 0 ? 'highlight-row' : ''}">
           <td>${i + 1}</td>
-          <td>${r.symbol}</td>
-          <td>$${r.price.toFixed(4)}</td>
-          <td class="${changeClass}">${r.change.toFixed(2)}%</td>
-          <td>${r.volume.toLocaleString()}</td>
+          <td>${r.symbol.replace("_", "/")}</td>
+          <td>$${r.price.toFixed(2)}</td>
+          <td class="${changeClass}">${r.change.toFixed(2)} $</td>
+          <td>${formattedVolume}</td>
           <td>${r.rsi.toFixed(1)}</td>
           <td><span class="score-badge ${scoreClass}">${r.pumpScore.toFixed(2)}</span></td>
           <td>MEXC</td>

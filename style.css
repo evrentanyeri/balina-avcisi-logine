@@ -221,3 +221,13 @@ tbody tr.highlight-row {
   0%,100% { background: rgba(0,255,153,.06); }
   50%     { background: rgba(0,255,153,.14); }
 }
+.highlight-row {
+  outline: 2px solid #00ff99;
+  box-shadow: 0 0 15px rgba(0,255,153,.4);
+  animation: glowPulse 2.2s infinite ease-in-out;
+}
+
+@keyframes glowPulse {
+  0%,100% { background-color: rgba(0,255,153,.06); }
+  50% { background-color: rgba(0,255,153,.15); }
+}

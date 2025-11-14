@@ -212,3 +212,12 @@ h3, h4, h5, p {
     box-shadow: 0 0 30px rgba(0,255,153,0.6);
   }
 }
+tbody tr.highlight-row {
+  outline: 2px solid #00ff99;
+  box-shadow: 0 0 18px rgba(0,255,153,.35) inset;
+  animation: glowPulse 2.5s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%,100% { background: rgba(0,255,153,.06); }
+  50%     { background: rgba(0,255,153,.14); }
+}

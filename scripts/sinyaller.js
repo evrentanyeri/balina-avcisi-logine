@@ -3,7 +3,10 @@ const coinList = ["BTC_USDT", "ETH_USDT", "SOL_USDT", "KDA_USDT", "BCH_USDT", "D
 
 async function fetchCoinData() {
   const table = document.getElementById("signalTable");
-  const lastUpdate = document.getElementById("lastUpdate");
+const lastUpdate = document.getElementById("lastUpdate");
+if (lastUpdate) {
+    lastUpdate.textContent = "Son güncelleme: " + new Date().toLocaleTimeString();
+}
 
   table.innerHTML = `<tr><td colspan="8" class="text-center text-info">🔄 Veriler yükleniyor...</td></tr>`;
 

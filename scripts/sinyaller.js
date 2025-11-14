@@ -1,7 +1,7 @@
 // ============================
 //    MEXC FUTURES API
 // ============================
-const API_URL = "https://contract.mexc.com/api/v1/contract/ticker";
+const API_URL = "/api/mexc-proxy";
 const MAX_ROWS = 20;
 const REFRESH_MS = 30000;
 

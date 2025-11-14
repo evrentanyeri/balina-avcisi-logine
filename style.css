@@ -228,6 +228,7 @@ tbody tr.highlight-row {
 }
 
 @keyframes glowPulse {
-  0%,100% { background-color: rgba(0,255,153,.06); }
-  50% { background-color: rgba(0,255,153,.15); }
+  0%, 100% { background-color: rgba(0,255,153,.06); }
+  50%      { background-color: rgba(0,255,153,.15); }
 }
+

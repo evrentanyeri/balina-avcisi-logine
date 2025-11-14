@@ -1,14 +1,24 @@
 // ======================================================
-// === MEXC FUTURES (USDT Perpetual) VERİLERİNİ ÇEK ===
+// === Hacmi K / M / B formatına çevir ===
 // ======================================================
+function formatVolume(v) {
+    if (v >= 1_000_000_000)
+        return (v / 1_000_000_000).toFixed(2) + "B";
+    if (v >= 1_000_000)
+        return (v / 1_000_000).toFixed(2) + "M";
+    if (v >= 1_000)
+        return (v / 1_000).toFixed(2) + "K";
+    return v.toFixed(0);
+}
 
+
+
+// ======================================================
+// === MEXC FUTURES (USDT PERPETUAL) VERİLERİNİ ÇEK ===
+// ======================================================
 async function fetchCoinData() {
     try {
-        const response = await fetch("/api/mexc-proxy", {
-            method: "GET",
-            headers: { "Accept": "application/json" }
-        });
-
+        const response = await fetch("/api/mexc-proxy");
         const json = await response.json();
 
         if (!json || !json.data) {
@@ -18,34 +28,32 @@ async function fetchCoinData() {
 
         const rows = [];
 
-        json.data.forEach((item) => {
-            if (!item.symbol || !item.symbol.endsWith("_USDT")) return;
+        for (const item of json.data) {
+            if (!item.symbol || !item.symbol.endsWith("_USDT")) continue;
 
+            const symbol = item.symbol;
             const price = parseFloat(item.lastPrice || 0);
             const change = parseFloat(item.riseFallValue || 0);
 
-            // Gerçek hacmi USDT olarak hesapla
+            // === Gerçek hacim (coin miktarı × fiyat) ===
             const volumeCoin = parseFloat(item.amount || 0);
-            const volumeUSDT = volumeCoin * price;
+            const volumeUSDT = Math.max(1, volumeCoin * price);
 
-            // RSI (şimdilik fake)
-            const rsi = 80 - Math.random() * 40;
+            // === RSI çek ===
+            const rsi = await fetchRSI(symbol);
 
             rows.push({
-                symbol: item.symbol.replace("_USDT", ""),
+                symbol: symbol.replace("_USDT", ""),
                 price,
                 change,
                 volumeUSDT,
                 rsi,
                 pumpScore: calcPumpScore(volumeUSDT, Math.abs(change), rsi),
             });
-        });
+        }
 
-        // Pump skoruna göre sırala
-        rows.sort((a, b) => b.pumpScore - a.pumpScore);
-
-        // 🔥 SADECE İLK 20 COİN
-        const top20 = rows.slice(0, 20);
+        // Pump skoruna göre sırala → İlk 20'yi al
+        const top20 = rows.sort((a, b) => b.pumpScore - a.pumpScore).slice(0, 20);
 
         updateTable(top20);
 
@@ -54,24 +62,86 @@ async function fetchCoinData() {
     }
 }
 
-// ======================================================
-// === Pump Skoru Hesaplama ===
-// ======================================================
 
+
+// ======================================================
+// === RSI için 1 dakikalık mumları çek ===
+// ======================================================
+async function fetchRSI(symbol) {
+    try {
+        const url =
+            `/api/kline?symbol=${symbol}&interval=Min1&limit=90`;
+
+        const r = await fetch(url);
+        const data = await r.json();
+
+        if (!Array.isArray(data) || data.length < 20) return 50;
+
+        const closes = data.map(c => parseFloat(c[4]));
+        return calculateRSI(closes);
+
+    } catch (err) {
+        console.error(`RSI hesaplanamadı (${symbol})`, err);
+        return 50;
+    }
+}
+
+
+
+// ======================================================
+// === RSI Hesaplama ===
+// ======================================================
+function calculateRSI(closes, period = 14) {
+    let gains = 0, losses = 0;
+
+    for (let i = 1; i <= period; i++) {
+        const diff = closes[i] - closes[i - 1];
+        if (diff >= 0) gains += diff;
+        else losses -= diff;
+    }
+
+    let avgGain = gains / period;
+    let avgLoss = losses / period;
+
+    for (let i = period + 1; i < closes.length; i++) {
+        const diff = closes[i] - closes[i - 1];
+
+        if (diff >= 0) {
+            avgGain = (avgGain * (period - 1) + diff) / period;
+            avgLoss = (avgLoss * (period - 1)) / period;
+        } else {
+            avgGain = (avgGain * (period - 1)) / period;
+            avgLoss = (avgLoss * (period - 1) - diff) / period;
+        }
+    }
+
+    if (avgLoss === 0) return 100;
+
+    const rs = avgGain / avgLoss;
+    return Math.max(1, Math.min(100, 100 - 100 / (1 + rs)));
+}
+
+
+
+// ======================================================
+// === Pump Skoru ===
+// ======================================================
 function calcPumpScore(volume, change, rsi) {
-    const v = Math.min(volume / 3000000, 1);   // 3M USD hacim = max etki
-    const c = Math.min(change / 5, 1);         // 5% değişim = max
-    const r = rsi / 100;                       // 0-1 arası ölçek
+    const v = Math.min(volume / 3_000_000, 1); 
+    const c = Math.min(change / 5, 1);
+    const r = rsi / 100;
 
     return ((v * 0.5 + c * 0.3 + r * 0.2) * 100).toFixed(2);
 }
 
+
+
 // ======================================================
 // === TABLOYA BASTIR ===
 // ======================================================
-
 function updateTable(rows) {
     const tbody = document.querySelector("#signalTable");
+
     if (!tbody) {
         console.error("HATA: #signalTable bulunamadı!");
         return;
@@ -87,7 +157,7 @@ function updateTable(rows) {
             <td>${row.symbol}</td>
             <td>${row.price.toFixed(4)}</td>
             <td>${row.change.toFixed(4)} $</td>
-            <td>$${row.volumeUSDT.toLocaleString()}</td>
+            <td>$${formatVolume(row.volumeUSDT)}</td>
             <td>${row.rsi.toFixed(1)}</td>
             <td>${row.pumpScore}</td>
             <td>MEXC</td>
@@ -97,12 +167,13 @@ function updateTable(rows) {
     });
 
     document.getElementById("lastUpdate").innerText =
-        "Son güncelleme: " + new Date().toLocaleTimeString("tr-TR");
+        new Date().toLocaleTimeString("tr-TR");
 }
 
-// ======================================================
-// === OTOMATİK YENİLEME ===
-// ======================================================
 
+
+// ======================================================
+// === OTOMATİK YENİLE ===
+// ======================================================
 fetchCoinData();
-setInterval(fetchCoinData, 30000);   // 30 sn
+setInterval(fetchCoinData, 30000);

@@ -2,8 +2,8 @@
 //    MEXC FUTURES API
 // ============================
 const API_URL = "https://contract.mexc.com/api/v1/contract/ticker";
-const MAX_ROWS = 20;           // Gösterilecek coin sayısı
-const REFRESH_MS = 30000;      // 30 saniyede bir yenile
+const MAX_ROWS = 20;
+const REFRESH_MS = 30000;
 
 
 // ============================
@@ -21,11 +21,8 @@ function formatKMB(v) {
 // ============================
 //   Pump Skor Hesaplama
 // ============================
-// volume → etkisi yüksek
-// rsi → orta
-// değişim → düşük
 function calcPumpScore(volumeUSDT, changeAbs, rsi) {
-    const volumeScore = Math.log10(volumeUSDT + 1) * 40; 
+    const volumeScore = Math.log10(volumeUSDT + 1) * 40;
     const rsiScore = rsi * 0.25;
     const changeScore = changeAbs * 0.20;
     return Math.min(volumeScore + rsiScore + changeScore, 100);
@@ -47,15 +44,18 @@ async function fetchCoinData() {
             return;
         }
 
-        const data = json.data;
+        // 👇👇👇 SPOT COINLERİ TAMAMEN TEMİZLEYEN FİLTRE 👇👇👇
+        const futuresData = json.data.filter(item =>
+            item.symbol.endsWith("_USDT")
+        );
 
-        let rows = data.map(item => {
-            const price = parseFloat(item.lastPrice); // son fiyat
-            const changeRate = parseFloat(item.riseFallRate); // % değişim
-            const changeAbs = parseFloat(price * (changeRate / 100)); // $ değişim
+        let rows = futuresData.map(item => {
+            const price = parseFloat(item.lastPrice);
+            const changeRate = parseFloat(item.riseFallRate);
+            const changeAbs = price * (changeRate / 100);
 
-            const volumeUSDT = parseFloat(item.volume); // futures volume USDT cinsinden
-            const rsi = 20 + Math.random() * 60;        // geçici RSI
+            const volumeUSDT = parseFloat(item.volume);
+            const rsi = 20 + Math.random() * 60;
 
             const pumpScore = calcPumpScore(volumeUSDT, changeAbs, rsi);
 
@@ -69,16 +69,14 @@ async function fetchCoinData() {
             };
         });
 
-        // Pump skoruna göre sırala (yüksekten düşüğe)
         rows = rows.sort((a, b) => b.pumpScore - a.pumpScore).slice(0, MAX_ROWS);
 
-        // Tabloyu yaz
         let html = "";
         rows.forEach((r, i) => {
             html += `
                 <tr>
                     <td>${i + 1}</td>
-                    <td>${r.symbol}</td>
+                    <td>${r.symbol.replace("_USDT","")}</td>
                     <td>${r.price.toFixed(4)}</td>
                     <td>${r.changeAbs.toFixed(4)} $</td>
                     <td>$${formatKMB(r.volumeUSDT)}</td>
@@ -91,21 +89,16 @@ async function fetchCoinData() {
 
         table.innerHTML = html;
 
-        // zaman damgası
-        const lastUpdate = document.getElementById("lastUpdate");
-        if (lastUpdate) {
-            lastUpdate.textContent = "Son güncelleme: " + new Date().toLocaleTimeString("tr-TR");
-        }
+        document.getElementById("lastUpdate").textContent =
+            "Son güncelleme: " + new Date().toLocaleTimeString("tr-TR");
 
     } catch (err) {
-        console.error("Fetch error:", err);
         table.innerHTML = `<tr><td colspan="8">❌ Veri alınamadı: ${err.message}</td></tr>`;
+        console.error(err);
     }
 }
 
 
-// İlk çalıştırma
+// İlk yükleme + 30sn yenileme
 fetchCoinData();
-
-// 30 saniyede bir yenile
 setInterval(fetchCoinData, REFRESH_MS);

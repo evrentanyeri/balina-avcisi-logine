@@ -186,3 +186,13 @@ h3, h4, h5, p {
 .text-danger {
   color: var(--neon-red) !important;
 }
+.highlight-row {
+  border: 2px solid #00ff99;
+  box-shadow: 0 0 25px rgba(0, 255, 153, 0.4);
+  animation: shine 3s infinite ease-in-out;
+}
+
+@keyframes shine {
+  0%, 100% { background-color: rgba(0,255,153,0.05); }
+  50% { background-color: rgba(0,255,153,0.15); }
+}

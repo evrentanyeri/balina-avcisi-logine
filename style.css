@@ -1,132 +1,181 @@
-/* -------------------------
-   GENEL AYARLAR & TEMA
--------------------------- */
+/* -----------------------------------
+   GLOBAL
+----------------------------------- */
 
 body {
     background: radial-gradient(circle at 30% 10%, #0a1a2f, #010409);
     color: #e6edf3;
     font-family: "Courier New", monospace;
     margin: 0;
+    padding: 0;
 }
 
-/* -------------------------
+/* Responsive container */
+.container {
+    width: 92%;
+    max-width: 1400px;
+    margin: auto;
+    padding-top: 20px;
+}
+
+/* -----------------------------------
+   BAŞLIK
+----------------------------------- */
+
+h1 {
+    text-align: center;
+    color: #aefcff;
+    font-size: 32px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 15px rgba(0,255,255,0.4);
+}
+
+.update-time {
+    text-align: right;
+    margin-bottom: 20px;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* -----------------------------------
    TABLO TASARIMI
--------------------------- */
+----------------------------------- */
+
+.table-box {
+    border-radius: 12px;
+    padding: 12px;
+    background: rgba(255,255,255,0.04);
+    box-shadow: 0 0 40px rgba(0,255,255,0.06);
+    backdrop-filter: blur(4px);
+}
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    color: #e6edf3;
-    font-size: 18px;
 }
 
 th {
-    padding: 12px;
-    text-align: center;
-    background-color: #0f1b2d;
-    color: #c8ffea;
-    font-size: 20px;
-    border-bottom: 2px solid #1e2a3d;
+    padding: 14px;
+    color: #aefcff;
+    font-size: 17px;
+    letter-spacing: 1px;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    text-shadow: 0 0 8px rgba(0,255,255,0.35);
 }
 
 td {
-    padding: 14px;
-    text-align: center;
-    border-bottom: 1px solid #1b2a41;
-    background-color: rgba(255, 255, 255, 0.04);
+    padding: 16px 8px;
+    font-size: 17px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
-/* Sıra numarası sütunu */
-td:first-child, th:first-child {
-    width: 40px;
+/* Hover’da hafif büyüme efekti */
+tr {
+    transition: 0.20s ease;
 }
 
-/* Hover efekti */
 tr:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-    transition: 0.2s;
+    background: rgba(255,255,255,0.07);
+    transform: scale(1.01);
+    cursor: pointer;
 }
 
-/* -------------------------
-   PUMP SKOR ROZETLERİ
--------------------------- */
-
-.score-badge {
-    display: inline-block;
-    padding: 6px 16px;
-    border-radius: 14px;
-    font-weight: bold;
-    font-size: 18px;
-    text-shadow: 0 0 4px rgba(0,0,0,0.3);
+/* Coin logosu */
+.coin-logo {
+    width: 22px;
+    vertical-align: middle;
+    margin-right: 6px;
 }
 
-/* HIGH (80–100) */
-.score-high {
-    background: rgba(0, 255, 0, 0.18);
-    color: #ccffcc;
-    box-shadow: 0 0 12px rgba(0, 255, 0, 0.22);
-}
-
-/* MID (60–80) */
-.score-mid {
-    background: rgba(255, 215, 0, 0.2);
-    color: #fff3b0;
-    box-shadow: 0 0 12px rgba(255, 215, 0, 0.22);
-}
-
-/* LOW (0–60) */
-.score-low {
-    background: rgba(255, 0, 90, 0.22);
-    color: #ffb3c7;
-    box-shadow: 0 0 12px rgba(255, 0, 90, 0.25);
-}
-
-/* -------------------------
+/* -----------------------------------
    DEĞİŞİM RENKLERİ
--------------------------- */
+----------------------------------- */
 
 .text-success {
-    color: #3cff7d !important;
+    color: #3fff7b !important;
 }
 
 .text-danger {
     color: #ff6f91 !important;
 }
 
-/* -------------------------
-   EN YÜKSEK SKOR (PARLAMA)
--------------------------- */
+/* -----------------------------------
+   PUMP SKOR ROZETLERİ (YENİ)
+----------------------------------- */
+
+.score-badge {
+    padding: 6px 18px;
+    border-radius: 30px;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 18px;
+    transition: 0.25s;
+}
+
+/* HIGH (80–100) neon */
+.score-high {
+    background: rgba(0,255,0,0.18);
+    color: #c6ffcc;
+    box-shadow: 0 0 15px rgba(0,255,0,0.5);
+}
+
+/* MID (60–80) neon */
+.score-mid {
+    background: rgba(255,215,0,0.22);
+    color: #fff4b3;
+    box-shadow: 0 0 15px rgba(255,215,0,0.35);
+}
+
+/* LOW (0–60) neon */
+.score-low {
+    background: rgba(255,0,90,0.22);
+    color: #ffc1d0;
+    box-shadow: 0 0 15px rgba(255,0,90,0.4);
+}
+
+/* -----------------------------------
+   EN YÜKSEK SKOR PARLAMA
+----------------------------------- */
 
 .highlight-row {
-    animation: glow 1.5s ease-in-out infinite alternate;
+    animation: glowRow 1.3s ease-in-out infinite alternate;
 }
 
-@keyframes glow {
+@keyframes glowRow {
     from { background-color: rgba(0,255,0,0.05); }
-    to   { background-color: rgba(0,255,0,0.15); }
+    to   { background-color: rgba(0,255,0,0.18); }
 }
 
-/* -------------------------
-   BAŞLIK
--------------------------- */
-
-h1, h2 {
-    text-align: center;
-    margin-top: 20px;
-    color: #d0f7ff;
-    text-shadow: 0 0 12px rgba(0, 255, 200, 0.4);
-}
-
-/* -------------------------
-   ALT BİLGİ (FOOTER)
--------------------------- */
+/* -----------------------------------
+   FOOTER
+----------------------------------- */
 
 footer {
     text-align: center;
+    color: #8eaac3;
+    margin-top: 35px;
     padding: 20px;
-    margin-top: 40px;
-    color: #88a9c6;
     font-size: 14px;
     opacity: 0.7;
+}
+
+/* -----------------------------------
+   MOBILE OPTIMIZATION
+----------------------------------- */
+
+@media (max-width: 768px) {
+    th, td {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .score-badge {
+        padding: 4px 12px;
+        font-size: 14px;
+    }
 }

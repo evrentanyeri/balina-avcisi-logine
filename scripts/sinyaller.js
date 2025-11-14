@@ -1,39 +1,58 @@
 // ===========================
-// 🐋 BALİNA AVCISI – PUMP RADAR v3
+// 🐋 BALİNA AVCISI – PUMP RADAR v5
 // ===========================
+
+// 🔹 Hacmi K-M-B biçiminde gösteren yardımcı fonksiyon
+function formatVolume(value) {
+  if (value >= 1_000_000_000) {
+    return (value / 1_000_000_000).toFixed(2) + " B";
+  } else if (value >= 1_000_000) {
+    return (value / 1_000_000).toFixed(2) + " M";
+  } else if (value >= 1_000) {
+    return (value / 1_000).toFixed(2) + " K";
+  } else {
+    return value.toFixed(2);
+  }
+}
 
 async function fetchCoinData() {
   const table = document.getElementById("coin-table-body");
   const lastUpdate = document.getElementById("lastUpdate");
 
+  if (!table) {
+    console.error("❌ coin-table-body bulunamadı!");
+    return;
+  }
+
   try {
     const response = await fetch("https://api.mexc.com/api/v3/ticker/24hr");
     const data = await response.json();
 
-    // 🔹 Sadece USDT çiftlerini al, ilk 30 tanesini seç
+    // 🔹 USDT paritelerini filtrele
     const filtered = data
       .filter(r => r.symbol.endsWith("USDT"))
       .slice(0, 30)
       .map(r => {
         const price = parseFloat(r.lastPrice);
         const change = parseFloat(r.priceChange);
-        const volume = parseFloat(r.quoteVolume); // hacim USDT bazında
-        const rsi = 20 + Math.random() * 60; // test amaçlı RSI
+        const volume = parseFloat(r.quoteVolume);
+        const rsi = 20 + Math.random() * 60; // test için rastgele RSI
         const fundingRate = (Math.random() * 0.04 - 0.02).toFixed(4);
         const socialBoost = Math.floor(Math.random() * 10);
 
-        const avgVolume = volume / (1 + Math.random() * 3);
-        const volumeStrength = (volume / avgVolume) * 10;
+        // 🔹 Pump skoru
+        const volumeStrength = Math.log10(volume + 1) * 10;
         const rsiScore = 100 - rsi;
-        const priceMomentum = change < 0 ? Math.abs(change) * 0.5 : change * 0.2;
-        const fundingScore = fundingRate < 0 ? Math.abs(fundingRate) * 1000 : 0;
+        const changeScore = Math.abs(change);
+        const fundingScore = Math.abs(fundingRate) * 500;
+        const socialScore = socialBoost * 2;
 
         const pumpScore = Math.min(
           (volumeStrength * 0.4) +
           (rsiScore * 0.25) +
-          (priceMomentum * 0.2) +
+          (changeScore * 0.2) +
           (fundingScore * 0.1) +
-          (socialBoost * 0.05),
+          (socialScore * 0.05),
           100
         );
 
@@ -43,7 +62,7 @@ async function fetchCoinData() {
           change,
           volume,
           rsi,
-          pumpScore
+          pumpScore,
         };
       });
 
@@ -54,16 +73,11 @@ async function fetchCoinData() {
     sorted.forEach((r, i) => {
       const changeClass = r.change > 0 ? "text-success" : "text-danger";
       const scoreClass =
-        r.pumpScore > 85
-          ? "score-high"
-          : r.pumpScore > 70
-          ? "score-mid"
-          : "score-low";
+        r.pumpScore > 80 ? "score-high" :
+        r.pumpScore > 60 ? "score-mid" :
+        "score-low";
 
-      // 🔹 Hacim formatı: $12,345,678 şeklinde
-      const formattedVolume = `$${r.volume.toLocaleString("en-US", {
-        maximumFractionDigits: 0,
-      })}`;
+      const formattedVolume = "$" + formatVolume(r.volume);
 
       html += `
         <tr class="neon-row ${i === 0 ? 'highlight-row' : ''}">
@@ -78,14 +92,14 @@ async function fetchCoinData() {
         </tr>`;
     });
 
-    if (table) table.innerHTML = html;
-    if (lastUpdate)
-      lastUpdate.textContent = `Son güncelleme: ${new Date().toLocaleTimeString("tr-TR")}`;
+    table.innerHTML = html;
 
+    if (lastUpdate) {
+      lastUpdate.textContent = `Son güncelleme: ${new Date().toLocaleTimeString("tr-TR")}`;
+    }
   } catch (err) {
     console.error("Veri çekme hatası:", err);
-    if (table)
-      table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">⚠️ Hata: ${err.message}</td></tr>`;
+    table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">⚠️ Veri alınamadı (${err.message})</td></tr>`;
   }
 }
 

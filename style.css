@@ -1,181 +1,64 @@
-/* -----------------------------------
-   GLOBAL
------------------------------------ */
+:root {
+    --neon-green: #00ff99;
+    --neon-red: #ff0066;
+    --neon-yellow: #ffd166;
+    --panel-bg: #050b14;
+    --thead-bg: #0e1a27;
+}
 
 body {
     background: radial-gradient(circle at 30% 10%, #0a1a2f, #010409);
     color: #e6edf3;
     font-family: "Courier New", monospace;
-    margin: 0;
-    padding: 0;
 }
 
-/* Responsive container */
-.container {
-    width: 92%;
-    max-width: 1400px;
-    margin: auto;
-    padding-top: 20px;
+.table {
+    color: #e6edf3;
 }
 
-/* -----------------------------------
-   BAŞLIK
------------------------------------ */
-
-h1 {
-    text-align: center;
-    color: #aefcff;
-    font-size: 32px;
-    margin-bottom: 10px;
-    text-shadow: 0 0 15px rgba(0,255,255,0.4);
+.table thead {
+    background: var(--thead-bg);
 }
 
-.update-time {
-    text-align: right;
-    margin-bottom: 20px;
-    font-size: 14px;
-    opacity: 0.7;
+#lastUpdate {
+    color: #9fb3c8;
+    font-size: 0.9rem;
 }
-
-/* -----------------------------------
-   TABLO TASARIMI
------------------------------------ */
-
-.table-box {
-    border-radius: 12px;
-    padding: 12px;
-    background: rgba(255,255,255,0.04);
-    box-shadow: 0 0 40px rgba(0,255,255,0.06);
-    backdrop-filter: blur(4px);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-    padding: 14px;
-    color: #aefcff;
-    font-size: 17px;
-    letter-spacing: 1px;
-    border-bottom: 2px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.05);
-    text-shadow: 0 0 8px rgba(0,255,255,0.35);
-}
-
-td {
-    padding: 16px 8px;
-    font-size: 17px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-/* Hover’da hafif büyüme efekti */
-tr {
-    transition: 0.20s ease;
-}
-
-tr:hover {
-    background: rgba(255,255,255,0.07);
-    transform: scale(1.01);
-    cursor: pointer;
-}
-
-/* Coin logosu */
-.coin-logo {
-    width: 22px;
-    vertical-align: middle;
-    margin-right: 6px;
-}
-
-/* -----------------------------------
-   DEĞİŞİM RENKLERİ
------------------------------------ */
-
-.text-success {
-    color: #3fff7b !important;
-}
-
-.text-danger {
-    color: #ff6f91 !important;
-}
-
-/* -----------------------------------
-   PUMP SKOR ROZETLERİ (YENİ)
------------------------------------ */
 
 .score-badge {
-    padding: 6px 18px;
-    border-radius: 30px;
-    font-weight: bold;
     display: inline-block;
-    font-size: 18px;
-    transition: 0.25s;
+    min-width: 52px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-shadow: 0 0 6px rgba(255,255,255,0.3);
 }
 
-/* HIGH (80–100) neon */
 .score-high {
-    background: rgba(0,255,0,0.18);
-    color: #c6ffcc;
-    box-shadow: 0 0 15px rgba(0,255,0,0.5);
+    background: rgba(0,255,153,0.12);
+    color: var(--neon-green);
+    box-shadow: 0 0 12px rgba(0,255,153,0.35);
 }
 
-/* MID (60–80) neon */
 .score-mid {
-    background: rgba(255,215,0,0.22);
-    color: #fff4b3;
-    box-shadow: 0 0 15px rgba(255,215,0,0.35);
+    background: rgba(255,209,102,0.12);
+    color: var(--neon-yellow);
+    box-shadow: 0 0 12px rgba(255,209,102,0.35);
 }
 
-/* LOW (0–60) neon */
 .score-low {
-    background: rgba(255,0,90,0.22);
-    color: #ffc1d0;
-    box-shadow: 0 0 15px rgba(255,0,90,0.4);
+    background: rgba(255,0,102,0.12);
+    color: var(--neon-red);
+    box-shadow: 0 0 12px rgba(255,0,102,0.35);
 }
 
-/* -----------------------------------
-   EN YÜKSEK SKOR PARLAMA
------------------------------------ */
-
+/* Parlayan animasyon — en yüksek pump skoru */
 .highlight-row {
-    animation: glowRow 1.3s ease-in-out infinite alternate;
+    animation: glow 1.6s ease-in-out infinite alternate;
 }
 
-@keyframes glowRow {
+@keyframes glow {
     from { background-color: rgba(0,255,0,0.05); }
-    to   { background-color: rgba(0,255,0,0.18); }
-}
-
-/* -----------------------------------
-   FOOTER
------------------------------------ */
-
-footer {
-    text-align: center;
-    color: #8eaac3;
-    margin-top: 35px;
-    padding: 20px;
-    font-size: 14px;
-    opacity: 0.7;
-}
-
-/* -----------------------------------
-   MOBILE OPTIMIZATION
------------------------------------ */
-
-@media (max-width: 768px) {
-    th, td {
-        font-size: 14px;
-        padding: 10px;
-    }
-
-    h1 {
-        font-size: 24px;
-    }
-
-    .score-badge {
-        padding: 4px 12px;
-        font-size: 14px;
-    }
+    to   { background-color: rgba(0,255,0,0.15); }
 }

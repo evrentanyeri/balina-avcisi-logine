@@ -1,27 +1,37 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Balina Avcısı - Pump Radar Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta http-equiv="refresh" content="0; url=gosterge-paneli.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Balina Avcısı - MEXC Pump Radar</title>
+  <style>
+    body {
+      background-color: #0b0f1a;
+      color: #00ffff;
+      font-family: "Courier New", monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .redirect {
+      text-shadow: 0 0 10px #00ffff;
+    }
+  </style>
 </head>
 <body>
-  <h1 class="title">🐋 Balina Avcısı - MEXC Pump Radar</h1>
-  <div class="dashboard">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th><th>Coin</th><th>Fiyat</th><th>24s Değişim</th>
-          <th>Hacim</th><th>RSI</th><th>Pump Skoru</th><th>Borsa</th>
-        </tr>
-      </thead>
-      <tbody id="signalTable">
-        <tr><td colspan="8" class="loading">Veriler yükleniyor...</td></tr>
-      </tbody>
-    </table>
+  <div class="redirect">
+    <h2>🐋 Balina Avcısı Dashboard yükleniyor...</h2>
+    <p>Lütfen bekleyin, yönlendiriliyorsunuz 🚀</p>
   </div>
-  <footer>© 2025 Balina Avcısı Dashboard | by Evren</footer>
-<script src="./scripts/sinyaller.js"></script>
+
+  <script>
+    // Eğer meta yönlendirme başarısız olursa (örneğin eski tarayıcılar)
+    setTimeout(() => {
+      window.location.href = "gosterge-paneli.html";
+    }, 2000);
+  </script>
 </body>
 </html>

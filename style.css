@@ -1,40 +1,188 @@
+/* ===========================
+🐋 BALİNA AVCISI - STİL DOSYASI
+=========================== */
+
+/* 🎯 GENEL AYARLAR */
+:root {
+  --bg-dark: #0b1622;
+  --bg-panel: #101a2b;
+  --bg-header: #162331;
+  --text-main: #e6edf3;
+  --text-muted: #9fb3c8;
+  --neon-green: #00ff99;
+  --neon-red: #ff0066;
+  --neon-yellow: #ffd166;
+  --glow-green: 0 0 20px rgba(0, 255, 153, 0.6);
+  --glow-red: 0 0 20px rgba(255, 0, 102, 0.5);
+  --glow-yellow: 0 0 20px rgba(255, 209, 102, 0.5);
+  --transition-speed: 0.3s;
+}
+
 body {
-  background: radial-gradient(circle at top, #0f1729 0%, #000 100%);
-  color: #e5e5e5;
-  font-family: 'Inter', sans-serif;
-  text-align: center;
+  background: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Courier New', monospace;
   margin: 0;
-  padding: 20px;
+  padding: 0;
+  line-height: 1.6;
 }
-.title {
-  font-size: 1.8rem;
-  color: #00FFFF;
-  text-shadow: 0 0 12px rgba(0,255,255,0.6);
-  margin-bottom: 20px;
+
+h3, h4, h5, p {
+  margin: 0;
 }
-table {
-  width: 95%;
-  margin: 0 auto;
-  border-collapse: collapse;
-  background-color: rgba(20, 20, 40, 0.6);
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0,255,255,0.2);
+
+.navbar {
+  background: var(--bg-header);
+  box-shadow: 0 0 12px rgba(0, 255, 153, 0.2);
 }
-th, td {
-  padding: 12px 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+
+/* ===========================
+📊 TABLO STİLİ
+=========================== */
+
+.table {
+  color: var(--text-main);
+  border-collapse: separate;
+  border-spacing: 0 8px;
 }
-th {
-  background: rgba(0,255,255,0.1);
-  color: #00FFFF;
+
+.table thead {
+  background: var(--bg-header);
   text-transform: uppercase;
-}
-tr:hover {
-  background: rgba(0,255,255,0.05);
-}
-.loading { color: #9CA3AF; }
-footer {
-  margin-top: 20px;
+  letter-spacing: 0.8px;
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--text-muted);
+}
+
+.table td, .table th {
+  vertical-align: middle;
+  border: none !important;
+  padding: 12px;
+}
+
+.table tbody tr {
+  background: var(--bg-panel);
+  border-radius: 10px;
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
+}
+
+.table tbody tr:hover {
+  transform: scale(1.015);
+  box-shadow: 0 0 15px rgba(0, 255, 153, 0.15);
+}
+
+/* ===========================
+📈 PUMP SKORU BADGELERİ
+=========================== */
+
+.score-badge {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.95rem;
+  display: inline-block;
+  text-align: center;
+  min-width: 60px;
+  transition: 0.3s ease;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+}
+
+.score-high {
+  background: rgba(0, 255, 153, 0.15);
+  color: var(--neon-green);
+  box-shadow: var(--glow-green);
+  animation: pulseGreen 2s infinite ease-in-out;
+}
+
+.score-mid {
+  background: rgba(255, 209, 102, 0.15);
+  color: var(--neon-yellow);
+  box-shadow: var(--glow-yellow);
+  animation: pulseYellow 3s infinite ease-in-out;
+}
+
+.score-low {
+  background: rgba(255, 0, 102, 0.12);
+  color: var(--neon-red);
+  box-shadow: var(--glow-red);
+  animation: pulseRed 3s infinite ease-in-out;
+}
+
+/* 🔁 Animasyonlar */
+@keyframes pulseGreen {
+  0%, 100% { box-shadow: 0 0 10px #00ff99; opacity: 1; }
+  50% { box-shadow: 0 0 25px #00ff99; opacity: 0.8; }
+}
+
+@keyframes pulseYellow {
+  0%, 100% { box-shadow: 0 0 10px #ffd166; opacity: 1; }
+  50% { box-shadow: 0 0 25px #ffd166; opacity: 0.7; }
+}
+
+@keyframes pulseRed {
+  0%, 100% { box-shadow: 0 0 10px #ff0066; opacity: 1; }
+  50% { box-shadow: 0 0 25px #ff0066; opacity: 0.8; }
+}
+
+/* ===========================
+🕒 SON GÜNCELLEME BİLGİSİ
+=========================== */
+#lastUpdate {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: right;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* ===========================
+📱 MOBİL UYUMLULUK
+=========================== */
+@media (max-width: 768px) {
+  .table thead {
+    display: none;
+  }
+  .table, .table tbody, .table tr, .table td {
+    display: block;
+    width: 100%;
+  }
+  .table tr {
+    margin-bottom: 1rem;
+    box-shadow: 0 0 10px rgba(0,255,153,0.1);
+  }
+  .table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+  .table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    padding-left: 10px;
+    font-weight: bold;
+    color: var(--text-muted);
+    text-align: left;
+  }
+}
+
+/* ===========================
+🌈 GEÇİŞLER VE PARLAMA
+=========================== */
+.neon-row {
+  border-radius: 8px;
+  transition: box-shadow 0.4s ease;
+}
+
+.neon-row:hover {
+  box-shadow: 0 0 25px rgba(0,255,153,0.3);
+}
+
+.text-success {
+  color: var(--neon-green) !important;
+}
+
+.text-danger {
+  color: var(--neon-red) !important;
 }

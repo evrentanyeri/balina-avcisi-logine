@@ -1,5 +1,5 @@
 // ----------------- AYARLAR -----------------
-const API_URL = "https://sweet-glade-63e8.evretanyeri.workers.dev/api/v3/ticker/24hr";
+const API_URL = "https://mexc-api-proxy.vercel.app/api/v3/ticker/24hr";
 const MAX_ROWS = 20;
 const REFRESH_MS = 30000; // 30 sn
 

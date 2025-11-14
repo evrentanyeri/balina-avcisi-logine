@@ -54,7 +54,7 @@ async function fetchCoinData() {
             const changeRate = parseFloat(item.riseFallRate);
             const changeAbs = price * (changeRate / 100);
 
-            const volumeUSDT = parseFloat(item.volume);
+const volumeUSDT = parseFloat(item.turnover);
             const rsi = 20 + Math.random() * 60;
 
             const pumpScore = calcPumpScore(volumeUSDT, changeAbs, rsi);

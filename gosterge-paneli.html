@@ -1,53 +1,67 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🐋 Balina Avcısı – MEXC Pump Radar</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🐋 Balina Avcısı – MEXC Pump Radar</title>
 
-    <!-- External CSS -->
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <!-- Senin stil dosyan -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Bootstrap sadece layout için (sen zaten kullanıyorsun) -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  />
 </head>
-
 <body>
-    <nav class="navbar navbar-dark bg-dark mb-4">
-        <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">🐋 Balina Avcısı – MEXC Pump Radar (Top 20)</span>
-        </div>
-    </nav>
 
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <h3 class="mb-0">Pump Adayları</h3>
-            <p id="lastUpdate" class="mb-0">Veriler yükleniyor...</p>
-        </div>
+  <!-- ÜST NEON BAŞLIK -->
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">
+        🐋 Balina Avcısı – MEXC Pump Radar
+      </span>
+    </div>
+  </nav>
 
-        <div class="table-responsive mt-3">
-            <table class="table table-dark table-striped text-center align-middle">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>COİN</th>
-                        <th>FİYAT</th>
-                        <th>24S DEĞİŞİM</th>
-                        <th>HACİM</th>
-                        <th>RSI</th>
-                        <th>PUMP SKORU</th>
-                        <th>BORSA</th>
-                    </tr>
-                </thead>
-                <tbody id="signalTable">
-                    <tr><td colspan="8">Yükleniyor...</td></tr>
-                </tbody>
-            </table>
-        </div>
+  <!-- ANA PANEL -->
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h3 class="mb-0">Pump Adayları</h3>
+      <p id="lastUpdate" class="mb-0">Veriler yükleniyor...</p>
     </div>
 
-    <footer class="text-center text-muted mt-4 mb-3">
-        © 2025 Balina Avcısı Dashboard | by Evren
-    </footer>
+    <div class="table-responsive">
+      <table class="table table-dark table-striped text-center align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">COİN</th>
+            <th scope="col">FİYAT</th>
+            <th scope="col">24S DEĞİŞİM</th>
+            <th scope="col">HACİM</th>
+            <th scope="col">RSI</th>
+            <th scope="col">PUMP SKORU</th>
+            <th scope="col">BORSA</th>
+          </tr>
+        </thead>
+        <tbody id="signalTable">
+          <!-- JS veriyi çekene kadar görünen satır -->
+          <tr>
+            <td colspan="8" class="py-4">Veriler yükleniyor...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-    <script src="scripts/sinyaller.js"></script>
+  <!-- ALT YAZI / FOOTER -->
+  <footer class="text-center text-muted py-3">
+    © 2025 Balina Avcısı Dashboard | by Evren
+  </footer>
+
+  <!-- Sinyal JS dosyan (yol aynı kaldı) -->
+  <script src="scripts/sinyaller.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 // ============================
 //    MEXC FUTURES API
 // ============================
-const API_URL = "/api/mexc-proxy";
+const API_URL = "https://balina-avcisi-logine.vercel.app/api/mexc-proxy";
 const MAX_ROWS = 20;
 const REFRESH_MS = 30000;
 

@@ -1,5 +1,5 @@
 // -------------------- AYARLAR --------------------
-const API_URL = "https://mexc-api-proxy.vercel.app/api/v3/ticker/24hr";
+const API_URL = "https://mexc-proxy.evren.workers.dev";
 const MAX_ROWS = 20;
 const REFRESH_MS = 30000; // 30 saniyede bir yenile
 

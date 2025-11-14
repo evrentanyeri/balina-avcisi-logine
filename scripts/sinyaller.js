@@ -65,6 +65,10 @@ if (lastUpdate) {
           <td>MEXC</td>
         </tr>`;
     });
+const lastUpdate = document.getElementById("lastUpdate");
+if (lastUpdate) {
+  lastUpdate.textContent = `Son güncelleme: ${new Date().toLocaleTimeString()}`;
+}
 
     table.innerHTML = html;
     lastUpdate.textContent = `Son güncelleme: ${new Date().toLocaleTimeString("tr-TR")}`;
